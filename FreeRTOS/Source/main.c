@@ -206,17 +206,19 @@ int main( void )
 	PORTB = 0xFF;
 	
 	xSerialPortInitMinimal ( mainCOM_BAUD_RATE, 20 );
-	vSerialPutString ( NULL, "init\n", 5 );
-	
-	/* Initialize OLED display */
-	vDisplayInit ();
+	vSerialPutString ( NULL, (signed char *) "init\n", 5 );
 	
 	//vAdcInit ( mainNUM_ADC_VALUES );
 	vAdcInit ( 10 );
 	
+	/* Initialize display. The display requires a short wait before initialization, for some reason. */
+	_delay_ms (150);
+	vDisplayInit ();
+	
 	/* Task to process joystick position from ADC */
 	xTaskCreate ( vJoystick, (signed char * ) "Joystick", configMINIMAL_STACK_SIZE, NULL, mainJOYSTICK_TASK_PRIORITY, NULL );
 	xTaskCreate ( vDisplay, (signed char * ) "Display", configMINIMAL_STACK_SIZE, NULL, mainDISPLAY_TASK_PRIORITY, NULL );
+	//xTaskCreate ( vTest, (signed char *) "")
 
 	/* Start scheduler */
 	vTaskStartScheduler();
@@ -230,7 +232,7 @@ static void vJoystick ( void *pvParameters )
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 1000;
 	signed portBASE_TYPE valx, valy;
-	char tick[5];
+	//char tick[5];
 	char adc[5];
 
 	xLastWakeTime = xTaskGetTickCount ();
@@ -245,16 +247,16 @@ static void vJoystick ( void *pvParameters )
 			xAdcGetValue ( &valy, 0 );
 			
 			itoa ( valx, adc, 10 );
-			vSerialPutString ( NULL, "x: ", 3);
-			vSerialPutString ( NULL, adc, 5 );
-			vSerialPutString ( NULL, "\n", 1 );
+			vSerialPutString ( NULL, (signed char *) "x: ", 3);
+			vSerialPutString ( NULL, (const signed char *) adc, 5 );
+			vSerialPutString ( NULL, (signed char *) "\n", 1 );
 			
 			itoa ( valy, adc, 10 );
-			vSerialPutString ( NULL, "y: ", 3);
-			vSerialPutString ( NULL, adc, 5 );
-			vSerialPutString ( NULL, "\n", 1 );
+			vSerialPutString ( NULL, (signed char *) "y: ", 3);
+			vSerialPutString ( NULL, (const signed char *) adc, 5 );
+			vSerialPutString ( NULL, (signed char *) "\n", 1 );
 			
-			vSerialPutString ( NULL, "\n", 1 );
+			vSerialPutString ( NULL, (signed char *) "\n", 1 );
 			
 			vAdcStartConversion ();
 		}
@@ -265,7 +267,7 @@ static void vDisplay ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 1000;
-	//char tick[5];
+	char tick[5];
 
 	xLastWakeTime = xTaskGetTickCount ();
 
@@ -273,10 +275,14 @@ static void vDisplay ( void *pvParameters )
 	{
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
 		
-		//itoa ( xLastWakeTime, &tick, 10 );
-		vSerialPutString ( NULL, "test\n", 5 );
-		vDisplayPutString ( 1, "morten", 6);
-		vDisplayPutString ( 2, "mjelva", 6 );
+		itoa ( xLastWakeTime, &tick, 10 );
+		vSerialPutString ( NULL, (signed char *) "test\n", 5 );
+
+		vDisplaySetLine ( 0 );
+		vDisplayPutString( 1, (const signed char *) tick, 5);
+		
+		//vDisplayPutString ( 1, (signed char *) "morten", 6);
+		//vDisplayPutString ( 2, (signed char *) "mjelva", 6 );
 	}
 }
 
@@ -289,7 +295,7 @@ void vApplicationIdleHook( void )
 
 void vApplicationStackOverflowHook ( xTaskHandle xTask, signed portCHAR *pcTaskName )
 {
-	vSerialPutString ( NULL, "overflow\n", 9);
+	vSerialPutString ( NULL, (signed char *) "overflow\n", 9);
 }
 
 void vApplicationTickHook ( void )

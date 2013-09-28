@@ -59,30 +59,30 @@
 #define DISPLAY_PRE_CHARGE_PERIOD		0xD9
 #define DISPLAY_COM_PINS				0xDA
 
-void vDisplayInit (void);
-void vDisplaySendCommand (uint8_t cmd);
-void vDisplaySendCommands (uint8_t len, uint8_t *cmds);
-void vDisplaySendData (uint8_t data);
+void vDisplayInitialize (void);
+void vDisplaySendCommand (unsigned char cmd);
+void vDisplaySendCommands (unsigned char len, unsigned char *cmds);
+void vDisplaySendData (unsigned char data);
 
-void vDisplaySetColumn (uint8_t col);
-void vDisplaySetColumnAddress (uint8_t start, uint8_t end);
-void vDisplaySetContrast (uint8_t contrast);
-void vDisplaySetDisplayClock (uint8_t clock);
+void vDisplaySetColumn (unsigned char col);
+void vDisplaySetColumnAddress (unsigned char start, unsigned char end);
+void vDisplaySetContrast (unsigned char contrast);
+void vDisplaySetDisplayClock (unsigned char clock);
 void vDisplaySetDisplayOn (void);
 void vDisplaySetDisplayOff (void);
-void vDisplaySetIref (uint8_t ref);
-void vDisplaySetLine (uint8_t line);
-void vDisplaySetMemoryAddressingMode (uint8_t mode);
-void vDisplaySetMuxRatio (uint8_t ratio);
-void vDisplaySetPageAddress (uint8_t start, uint8_t end);
-void vDisplaySetPosition (uint8_t line, uint8_t col);
-void vDisplaySetPreChargePeriod (uint8_t period);
-void vDisplaySetVcomDeselectLevel (uint8_t level);
+void vDisplaySetIref (unsigned char ref);
+void vDisplaySetLine (unsigned char line);
+void vDisplaySetMemoryAddressingMode (unsigned char mode);
+void vDisplaySetMuxRatio (unsigned char ratio);
+void vDisplaySetPageAddress (unsigned char start, unsigned char end);
+void vDisplaySetPosition (unsigned char line, unsigned char col);
+void vDisplaySetPreChargePeriod (unsigned char period);
+void vDisplaySetVcomDeselectLevel (unsigned char level);
 
 void vDisplayClearDisplay (void);
-void vDisplayClearLine (uint8_t line);
-void vDisplayPrint (char *c);
-void vDisplayPutChar (char c);
+void vDisplayClearLine (unsigned char line);
+void vDisplayPutString ( const char line, const signed char * const pcString, unsigned short usStringLength );
+void vDisplayPutchar (char c);
 
 
 #endif /* OLED_H_ */

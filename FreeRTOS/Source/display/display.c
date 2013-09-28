@@ -13,12 +13,17 @@
 #include "display.h"
 #include "font_8x8.h"
 
-volatile uint8_t *Display_cmd = (uint8_t *) 0x4000;
-volatile uint8_t *Display_data = (uint8_t *) 0x4200;
+volatile unsigned char *ucCommandAddress = (unsigned char *) 0x4000;
+volatile unsigned char *ucDataAddress = (unsigned char *) 0x4200;
 
 void vDisplayInit (void)
 {
-/*
+	/* Initialize external memory interface */
+	XMCRA |= (1 << SRE);
+		
+	/* Release PC7-PC2 */
+	XMCRB |= (1 << XMM2) | (1 << XMM1);
+
 	vDisplaySetDisplayOff ();
 	vDisplaySendCommand (0xa1); //segment remap
 	vDisplaySendCommand (0xda); //common pads hardware: alternative
@@ -26,91 +31,60 @@ void vDisplayInit (void)
 	
 	vDisplaySendCommand (0xc8); //common output scan direction:com63~com0
 	
-	vDisplaySetMuxRatio (0x3F);	
-	vDisplaySetDisplayClock (0x80);	
+	vDisplaySetMuxRatio (0x3F);
+	vDisplaySetDisplayClock (0x80);
 	vDisplaySetContrast (0x50);
 	vDisplaySetPreChargePeriod (0x21);
 	vDisplaySetMemoryAddressingMode (PAGE_ADDRESSING_MODE);
 	vDisplaySetVcomDeselectLevel (VCOMH_DESELECT_0_83);
 	vDisplaySetIref (IREF_INTERNAL);
 	
-	vDisplaySendCommand (Display_DISPLAY_RAM);
-	vDisplaySendCommand (Display_DISPLAY_NORMAL);
+	vDisplaySendCommand (DISPLAY_DISPLAY_RAM);
+	vDisplaySendCommand (DISPLAY_DISPLAY_NORMAL);
 	vDisplayClearDisplay ();
-	vDisplaySetDisplayOn ();*/
-
-	/* Initialize external memory interface */
-	XMCRA |= (1 << SRE);
-		
-	/* Release PC7-PC2 */
-	XMCRB |= (1 << XMM2) | (1 << XMM1);
-
-	vDisplaySendCommand (0xae); // display off
-	vDisplaySendCommand (0xa1); //segment remap
-	vDisplaySendCommand (0xda); //common pads hardware: alternative
-	vDisplaySendCommand (0x12);
-	vDisplaySendCommand (0xc8); //common output scan direction:com63~com0
-	vDisplaySendCommand (0xa8); //multiplex ration mode:63
-	vDisplaySendCommand (0x3f);
-	vDisplaySendCommand (0xd5); //display divide ratio/osc. freq. mode
-	vDisplaySendCommand (0x80);
-	vDisplaySendCommand (0x81); //contrast control
-	vDisplaySendCommand (0x50);
-	vDisplaySendCommand (0xd9); //set pre-charge period
-	vDisplaySendCommand (0x21);
-	vDisplaySendCommand (0x20); //Set Memory Addressing Mode
-	vDisplaySendCommand (0x02);
-	vDisplaySendCommand (0xdb); //VCOM deselect level mode
-	vDisplaySendCommand (0x30);
-	vDisplaySendCommand (0xad); //master configuration
-	vDisplaySendCommand (0x00);
-	vDisplaySendCommand (0xa4); //out follows RAM content
-	vDisplaySendCommand (0xa6); //set normal display
-	vDisplaySendCommand (0xaf); // display on
-	
-	vDisplayClearDisplay ();
+	vDisplaySetDisplayOn ();
 }
 
-void vDisplaySendCommand (uint8_t cmd)
+void vDisplaySendCommand (unsigned char cmd)
 {
 	
-	*Display_cmd = cmd;
+	*ucCommandAddress = cmd;
 }
 
-void vDisplaySendCommands (uint8_t len, uint8_t *cmds)
+void vDisplaySendCommands (unsigned char len, unsigned char *cmds)
 {
 	for (int i = 0; i < len; i++)
 	{
-		*Display_cmd = cmds[i];
+		*ucCommandAddress = cmds[i];
 	}
 }
 
-void vDisplaySendData (uint8_t data)
+void vDisplaySendData (unsigned char data)
 {
-	*Display_data = data;
+	*ucDataAddress = data;
 }
 
-void vDisplaySetColumn (uint8_t col)
+void vDisplaySetColumn (unsigned char col)
 {
 	vDisplaySendCommand (0x00 + (col & 0x0F));
 	vDisplaySendCommand (0x10 + (col >> 4));
 }
 
-void vDisplaySetColumnAddress (uint8_t start, uint8_t end)
+void vDisplaySetColumnAddress (unsigned char start, unsigned char end)
 {
-uint8_t cmds[3] = {DISPLAY_COLUMN_ADDRESS, start, end};
+unsigned char cmds[3] = {DISPLAY_COLUMN_ADDRESS, start, end};
 vDisplaySendCommands (3, cmds);
 }
 
-void vDisplaySetContrast (uint8_t contrast)
+void vDisplaySetContrast (unsigned char contrast)
 {
-	uint8_t cmds[2] = { DISPLAY_CONTRAST, contrast };
+	unsigned char cmds[2] = { DISPLAY_CONTRAST, contrast };
 	vDisplaySendCommands (2, cmds);
 }
 
-void vDisplaySetDisplayClock (uint8_t clock)
+void vDisplaySetDisplayClock (unsigned char clock)
 {
-	uint8_t cmds[2] = { DISPLAY_DISPLAY_CLOCK, clock };
+	unsigned char cmds[2] = { DISPLAY_DISPLAY_CLOCK, clock };
 	vDisplaySendCommands (2, cmds);
 }
 
@@ -124,69 +98,67 @@ void vDisplaySetDisplayOff (void)
 	vDisplaySendCommand (DISPLAY_POWER_OFF);
 }
 
-void vDisplaySetIref (uint8_t ref)
+void vDisplaySetIref (unsigned char ref)
 {
-	uint8_t cmds[2] = { DISPLAY_SELECT_IREF, ref };
+	unsigned char cmds[2] = { DISPLAY_SELECT_IREF, ref };
 	vDisplaySendCommands (2, cmds);
 }
 
-void vDisplaySetLine (uint8_t line)
+void vDisplaySetLine (unsigned char line)
 {
 	vDisplaySendCommand (DISPLAY_PAGE_START_ADDRESS + line);
 	vDisplaySetColumn (0);
 }
 
-void vDisplaySetMemoryAddressingMode (uint8_t mode)
+void vDisplaySetMemoryAddressingMode (unsigned char mode)
 {
-	uint8_t cmds[2] = { DISPLAY_MEMORY_ADDRESSING_MODE, mode };
+	unsigned char cmds[2] = { DISPLAY_MEMORY_ADDRESSING_MODE, mode };
 	vDisplaySendCommands (2, cmds);
 }
 
-void vDisplaySetMuxRatio (uint8_t ratio)
+void vDisplaySetMuxRatio (unsigned char ratio)
 {	
-	uint8_t cmds[2] = { DISPLAY_MUX_RATIO, ratio };
+	unsigned char cmds[2] = { DISPLAY_MUX_RATIO, ratio };
 	vDisplaySendCommands (2, cmds);
 }	
 
-void vDisplaySetPageAddress (uint8_t start, uint8_t end)
+void vDisplaySetPageAddress (unsigned char start, unsigned char end)
 {
-	uint8_t cmds[3] = {DISPLAY_PAGE_ADDRESS, start, end};
+	unsigned char cmds[3] = {DISPLAY_PAGE_ADDRESS, start, end};
 	vDisplaySendCommands (3, cmds);
 }
 
-void vDisplaySetPosition (uint8_t line, uint8_t col)
+void vDisplaySetPosition (unsigned char line, unsigned char col)
 {
 	vDisplaySetLine (line);
 	vDisplaySetColumn (col * FONT_WIDTH);
 }
 
-void vDisplaySetPreChargePeriod (uint8_t period)
+void vDisplaySetPreChargePeriod (unsigned char period)
 {
-	uint8_t cmds[2] = { DISPLAY_PRE_CHARGE_PERIOD, period };
+	unsigned char cmds[2] = { DISPLAY_PRE_CHARGE_PERIOD, period };
 	vDisplaySendCommands (2, cmds);
 }
 
-void vDisplaySetVcomDeselectLevel (uint8_t level)
+void vDisplaySetVcomDeselectLevel (unsigned char level)
 {
-	uint8_t cmds[2] = { DISPLAY_VCOMH_DESELECT_LEVEL, level };
+	unsigned char cmds[2] = { DISPLAY_VCOMH_DESELECT_LEVEL, level };
 	vDisplaySendCommands (2, cmds);
 }
 
 void vDisplayClearDisplay (void)
 {
-	vDisplaySetDisplayOff ();
-	for (uint8_t line = 0; line < PAGES; line++)
+	for (unsigned char line = 0; line < PAGES; line++)
 	{
 		vDisplayClearLine (line);
 	}
-	vDisplaySetDisplayOn ();
 }
 
-void vDisplayClearLine (uint8_t line)
+void vDisplayClearLine (unsigned char line)
 {
 	vDisplaySetLine (line);
 
-	for (uint8_t col = 0; col < COLUMNS; col++)
+	for (unsigned char col = 0; col < COLUMNS; col++)
 	{
 		vDisplaySendData (0);
 	}
@@ -197,13 +169,13 @@ void vDisplayPutString ( const char line, const signed char * const pcString, un
 	vDisplaySetLine ( line );
 	for (unsigned short i = 0; i < usStringLength; i++)
 	{
-		vDisplayPutChar ( pcString[i] );
+		vDisplayPutchar ( pcString[i] );
 	}
 }
 
-void vDisplayPutChar (char c)
+void vDisplayPutchar (char c)
 {
-	for (uint8_t i = 0; i < FONT_WIDTH; i++)
+	for (unsigned char i = 0; i < FONT_WIDTH; i++)
 	{
 		vDisplaySendData (pgm_read_byte (&font[c - ' '][i]));
 	}
