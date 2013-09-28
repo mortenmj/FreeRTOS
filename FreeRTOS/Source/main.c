@@ -228,7 +228,7 @@ int main( void )
 static void vJoystick ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
-	const portTickType xFrequency = 500;
+	const portTickType xFrequency = 1000;
 	signed portBASE_TYPE valx, valy;
 	char tick[5];
 	char adc[5];
@@ -265,7 +265,7 @@ static void vDisplay ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 1000;
-	char tick[5];
+	//char tick[5];
 
 	xLastWakeTime = xTaskGetTickCount ();
 
@@ -273,7 +273,10 @@ static void vDisplay ( void *pvParameters )
 	{
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
 		
-		vDisplayWrite ( 0, "test" );
+		//itoa ( xLastWakeTime, &tick, 10 );
+		vSerialPutString ( NULL, "test\n", 5 );
+		vDisplayPutString ( 1, "morten", 6);
+		vDisplayPutString ( 2, "mjelva", 6 );
 	}
 }
 

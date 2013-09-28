@@ -129,13 +129,7 @@
     <Compile Include="Source\display\display.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Source\drivers\font_8x8.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Source\drivers\oled.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Source\drivers\oled.h">
+    <Compile Include="Source\display\font_8x8.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\FreeRTOSConfig.h">
