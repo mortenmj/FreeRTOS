@@ -135,9 +135,6 @@
     <Compile Include="Source\drivers\oled.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="Source\drivers\ring_buffer.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="Source\FreeRTOSConfig.h">
       <SubType>compile</SubType>
     </Compile>

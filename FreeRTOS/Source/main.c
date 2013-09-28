@@ -177,7 +177,6 @@ the demo application is not unexpectedly resetting. */
 /* The number of coroutines to create. */
 #define mainNUM_FLASH_COROUTINES		( 3 )
 
-void vSendChar ( char c );
 void vSendString ( char *s );
 
 /*
@@ -220,10 +219,7 @@ int main( void )
 	DDRB = 0xFF;
 	PORTB = 0xFF;
 	
-	UCSR1B |= (1 << TXEN1);
-	UCSR1C |= (1 << UCSZ11) | (1 << UCSZ10);
-	UBRR1 = 207;
-
+	xSerialPortInitMinimal ( 4800, 10 );
 	vSendString ( "init\n" );
 	vDisplayInitialize ();
 	
@@ -240,54 +236,49 @@ int main( void )
 
 static void vTest1 ( void *pvParameters )
 {
-	const portTickType xDelay = 1000 / portTICK_RATE_MS;
-/*
-	portTickType xTickCount;
-	char c[5];*/
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 500;
+	char c[5];
+
+	xLastWakeTime = xTaskGetTickCount ();
 
 	while (1)
 	{
-/*
-		xTickCount = xTaskGetTickCount ();
-		itoa ( xTickCount, &c, 10 );
+		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
+
+		vSendString ("task1:\n");
+		itoa ( xLastWakeTime, &c, 10 );
 		vSendString ( c );
-		vSendChar ( '\n' );*/
-		vSendString ("task1\n");
-		vTaskDelay ( xDelay );
+		vSendString ( "\n\n" );
 	}	
 }
 
 static void vTest2 ( void *pvParameters )
 {
-	const portTickType xDelay = 1000 / portTICK_RATE_MS;
-/*
-	portTickType xTickCount;
-	char c[5];*/
+	portTickType xLastWakeTime;
+	const portTickType xFrequency = 1000;
+	char c[5];
+
+	xLastWakeTime = xTaskGetTickCount ();
 
 	while (1)
 	{
-/*
-		xTickCount = xTaskGetTickCount ();
-		itoa ( xTickCount, &c, 10 );
-		vDisplayWrite ( 1, c );*/
-		vSendString ("task2\n");
-		vTaskDelay ( xDelay );
+		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
+
+		vSendString ("task2:\n");
+		itoa ( xLastWakeTime, &c, 10 );
+		vSendString ( c );
+		vSendString ( "\n\n" );
 	}
 }
 
 /*-----------------------------------------------------------*/
 
-void vSendChar ( char c )
-{
-	while ((UCSR1A & (1 << UDRE1)) == 0);
-	UDR1 = c;
-}
-
 void vSendString ( char *s )
 {
 	while ( *s != 0x00 )
 	{
-		vSendChar ( *s );
+		xSerialPutChar ( NULL, *s, 0 );
 		s++;
 	}
 }

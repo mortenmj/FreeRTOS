@@ -95,17 +95,16 @@ Changes from V2.6.0
 #define serBAUD_DIV_CONSTANT			( ( unsigned long ) 16 )
 
 /* Constants for writing to UCSRnB. */
-#define serRX_INT_ENABLE				( ( unsigned char ) 0x80 )
-#define serRX_ENABLE					( ( unsigned char ) 0x10 )
-#define serTX_ENABLE					( ( unsigned char ) 0x08 )
-#define serTX_INT_ENABLE				( ( unsigned char ) 0x20 )
+#define serRX_INT_ENABLE				( ( unsigned char ) ( 1 << RXCIE1 ) )
+#define serRX_ENABLE					( ( unsigned char ) ( 1 << RXEN1 ) )
+#define serTX_ENABLE					( ( unsigned char ) ( 1 << TXEN1 ) )
+#define serTX_INT_ENABLE				( ( unsigned char ) ( 1 << UDRIE1 ) )
 
 /* Constants for writing to UCSRnC. */
-#define serUCSRC_SELECT					( ( unsigned char ) 0x80 )
-#define serEIGHT_DATA_BITS				( ( unsigned char ) 0x03 )
+#define serEIGHT_DATA_BITS				( ( unsigned char ) ( 1 << UCSZ11 ) | ( 1 << UCSZ10 ) )
 
-static xQueueHandle xRxedChars; 
-static xQueueHandle xCharsForTx; 
+static xQueueHandle xRxedChars;
+static xQueueHandle xCharsForTx;
 
 #define vInterruptOn()												\
 {																	\
@@ -216,7 +215,7 @@ unsigned char ucByte;
 }
 /*-----------------------------------------------------------*/
 
-SIGNAL( USART1_RX_vect )
+ISR ( USART1_RX_vect )
 {
 signed char cChar;
 signed portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
@@ -234,7 +233,7 @@ signed portBASE_TYPE xHigherPriorityTaskWoken = pdFALSE;
 }
 /*-----------------------------------------------------------*/
 
-SIGNAL( USART1_UDRE_vect )
+ISR ( USART1_UDRE_vect )
 {
 signed char cChar, cTaskWoken;
 
