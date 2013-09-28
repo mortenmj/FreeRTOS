@@ -169,15 +169,6 @@ and mainCOM_TEST_LED + 1 is toggles on each character Rx. */
 /* Number of ADC values to queue */
 #define mainNUM_ADC_VALUES				( 2 )
 
-/* LED that is toggled by the check task.  The check task periodically checks
-that all the other tasks are operating without error.  If no errors are found
-the LED is toggled.  If an error is found at any time the LED is never toggles
-again. */
-#define mainCHECK_TASK_LED				( 7 )
-
-/* The period between executions of the check task. */
-#define mainCHECK_PERIOD				( ( portTickType ) 3000 / portTICK_RATE_MS  )
-
 /* An address in the EEPROM used to count resets.  This is used to check that
 the demo application is not unexpectedly resetting. */
 #define mainRESET_COUNT_ADDRESS			( ( void * ) 0x50 )
