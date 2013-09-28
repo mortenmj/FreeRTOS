@@ -162,6 +162,9 @@ Changes from V4.0.5
 /* Baud rate used by the serial port tasks. */
 #define mainCOM_BAUD_RATE				( ( unsigned long ) 28800 )
 
+/* Delay needed before initializing display */
+#define mainDISPLAY_INIT_DELAY			150
+
 /* LED used by the serial port tasks.  This is toggled on each character Tx,
 and mainCOM_TEST_LED + 1 is toggles on each character Rx. */
 #define mainCOM_TEST_LED				( 4 )
@@ -210,15 +213,10 @@ int main( void )
 	
 	//vAdcInit ( mainNUM_ADC_VALUES );
 	vAdcInit ( 10 );
-	
-	/* Initialize display. The display requires a short wait before initialization, for some reason. */
-	_delay_ms (150);
-	vDisplayInit ();
-	
+		
 	/* Task to process joystick position from ADC */
 	xTaskCreate ( vJoystick, (signed char * ) "Joystick", configMINIMAL_STACK_SIZE, NULL, mainJOYSTICK_TASK_PRIORITY, NULL );
 	xTaskCreate ( vDisplay, (signed char * ) "Display", configMINIMAL_STACK_SIZE, NULL, mainDISPLAY_TASK_PRIORITY, NULL );
-	//xTaskCreate ( vTest, (signed char *) "")
 
 	/* Start scheduler */
 	vTaskStartScheduler();
@@ -237,6 +235,9 @@ static void vJoystick ( void *pvParameters )
 
 	xLastWakeTime = xTaskGetTickCount ();
 
+	vTaskDelayUntil ( xLastWakeTime, 150 );
+	vDisplayInit ();
+	
 	while (1)
 	{
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
@@ -270,6 +271,10 @@ static void vDisplay ( void *pvParameters )
 	char tick[5];
 
 	xLastWakeTime = xTaskGetTickCount ();
+	
+	/* Display requires a short wait before initialization */
+	vTaskDelay ( mainDISPLAY_INIT_DELAY / portTICK_RATE_MS );
+	vDisplayInit ();
 
 	while (1)
 	{
@@ -278,11 +283,9 @@ static void vDisplay ( void *pvParameters )
 		itoa ( xLastWakeTime, &tick, 10 );
 		vSerialPutString ( NULL, (signed char *) "test\n", 5 );
 
-		vDisplaySetLine ( 0 );
-		vDisplayPutString( 1, (const signed char *) tick, 5);
-		
-		//vDisplayPutString ( 1, (signed char *) "morten", 6);
-		//vDisplayPutString ( 2, (signed char *) "mjelva", 6 );
+		vDisplayPutString ( 1, (const signed char *) tick, 5);
+		vDisplayPutString ( 4, (signed char *) "morten", 6);
+		vDisplayPutString ( 5, (signed char *) "mjelva", 6 );
 	}
 }
 

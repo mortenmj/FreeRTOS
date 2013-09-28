@@ -59,7 +59,7 @@
 #define DISPLAY_PRE_CHARGE_PERIOD		0xD9
 #define DISPLAY_COM_PINS				0xDA
 
-void vDisplayInitialize (void);
+void vDisplayInit (void);
 void vDisplaySendCommand (unsigned char cmd);
 void vDisplaySendCommands (unsigned char len, unsigned char *cmds);
 void vDisplaySendData (unsigned char data);
