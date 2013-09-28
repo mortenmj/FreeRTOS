@@ -181,7 +181,7 @@ the demo application is not unexpectedly resetting. */
  * ensure the CPU does not reset unexpectedly.
  */
 static void vJoystick ( void *pvParameters );
-static void vTest2 ( void *pvParameters );
+static void vDisplay ( void *pvParameters );
 
 /*
  * The idle hook is used to scheduler co-routines.
@@ -207,15 +207,16 @@ int main( void )
 	
 	xSerialPortInitMinimal ( mainCOM_BAUD_RATE, 20 );
 	vSerialPutString ( NULL, "init\n", 5 );
-	//vDisplayInitialize ();
+	
+	/* Initialize OLED display */
+	vDisplayInit ();
 	
 	//vAdcInit ( mainNUM_ADC_VALUES );
 	vAdcInit ( 10 );
 	
 	/* Task to process joystick position from ADC */
 	xTaskCreate ( vJoystick, (signed char * ) "Joystick", configMINIMAL_STACK_SIZE, NULL, mainJOYSTICK_TASK_PRIORITY, NULL );
-	
-	//xTaskCreate ( vTest2, (signed char * ) "Test2", configMINIMAL_STACK_SIZE, NULL, (mainLED_TASK_PRIORITY+1), NULL );
+	xTaskCreate ( vDisplay, (signed char * ) "Display", configMINIMAL_STACK_SIZE, NULL, mainDISPLAY_TASK_PRIORITY, NULL );
 
 	/* Start scheduler */
 	vTaskStartScheduler();
@@ -260,7 +261,7 @@ static void vJoystick ( void *pvParameters )
 	}	
 }
 
-static void vTest2 ( void *pvParameters )
+static void vDisplay ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 1000;
@@ -271,6 +272,8 @@ static void vTest2 ( void *pvParameters )
 	while (1)
 	{
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
+		
+		vDisplayWrite ( 0, "test" );
 	}
 }
 
