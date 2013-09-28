@@ -148,8 +148,16 @@ Changes from V4.0.5
 #define SW3 PD7
 
 /* Priority definitions for our tasks. */
-#define mainLED_TASK_PRIORITY			( tskIDLE_PRIORITY + 1 )
+
+/* Strict timing */
+#define mainBOARD_TASK_PRIORITY			( tskIDLE_PRIORITY + 2 )
+
+/* Deadline timing */
 #define mainJOYSTICK_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 )
+#define mainDISPLAY_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 )
+
+/* Flexible timing */
+#define mainLED_TASK_PRIORITY			( tskIDLE_PRIORITY )
 
 /* Baud rate used by the serial port tasks. */
 #define mainCOM_BAUD_RATE				( ( unsigned long ) 28800 )
