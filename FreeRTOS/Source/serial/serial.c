@@ -166,7 +166,7 @@ void vSerialPutString( xComPortHandle pxPort, const signed char * const pcString
 	/* Only one port is supported. */
 	( void ) pxPort;
 	
-	for ( int i = 0; i < usStringLength; i++ )
+	for ( unsigned short i = 0; i < usStringLength; i++ )
 	{
 		xSerialPutChar ( NULL, pcString[i], 0 );
 	}
