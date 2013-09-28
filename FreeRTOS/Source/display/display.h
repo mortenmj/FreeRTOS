@@ -9,7 +9,7 @@
 #ifndef DISPLAY_H_
 #define DISPLAY_H_
 
-void vDisplayInitialize ( void );
+void vDisplayInit ( void );
 void vDisplayWrite ( int line, char *s );
 
 #endif /* DISPLAY_H_ */

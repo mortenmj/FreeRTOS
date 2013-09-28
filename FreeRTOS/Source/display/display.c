@@ -11,7 +11,7 @@
 
 #include "drivers/oled.h"
 
-void vDisplayInitialize (void)
+void vDisplayInit (void)
 {
 	/* Initialize external memory interface */
 	XMCRA |= (1 << SRE);
