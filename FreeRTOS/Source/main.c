@@ -212,8 +212,9 @@ int main( void )
 	//vAdcInit ( mainNUM_ADC_VALUES );
 	vAdcInit ( 10 );
 	
-	/* Test test test */
-	xTaskCreate ( vTest1, (signed char * ) "Test1", configMINIMAL_STACK_SIZE, NULL, (mainLED_TASK_PRIORITY+1), NULL );
+	/* Task to process joystick position from ADC */
+	xTaskCreate ( vJoystick, (signed char * ) "Joystick", configMINIMAL_STACK_SIZE, NULL, mainJOYSTICK_TASK_PRIORITY, NULL );
+	
 	//xTaskCreate ( vTest2, (signed char * ) "Test2", configMINIMAL_STACK_SIZE, NULL, (mainLED_TASK_PRIORITY+1), NULL );
 
 	/* Start scheduler */
@@ -223,7 +224,7 @@ int main( void )
 }
 /*-----------------------------------------------------------*/
 
-static void vTest1 ( void *pvParameters )
+static void vJoystick ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 500;
