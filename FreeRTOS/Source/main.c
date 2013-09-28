@@ -127,9 +127,9 @@ Changes from V4.0.5
 #include "croutine.h"
 
 /* Includes for our tasks */
-#include "serial.h"
-#include "adc.h"
+#include "adc/adc.h"
 #include "display/display.h"
+#include "serial/serial.h"
 
 #define F_CPU 16000000UL
 #include <util/delay.h>
@@ -152,14 +152,14 @@ Changes from V4.0.5
 #define mainJOYSTICK_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 )
 
 /* Baud rate used by the serial port tasks. */
-#define mainCOM_BAUD_RATE				( ( unsigned long ) 19200 )
+#define mainCOM_BAUD_RATE				( ( unsigned long ) 28800 )
 
 /* LED used by the serial port tasks.  This is toggled on each character Tx,
 and mainCOM_TEST_LED + 1 is toggles on each character Rx. */
 #define mainCOM_TEST_LED				( 4 )
 
 /* Number of ADC values to queue */
-#define mainNUM_ADC_VALUES				( 4 )
+#define mainNUM_ADC_VALUES				( 2 )
 
 /* LED that is toggled by the check task.  The check task periodically checks
 that all the other tasks are operating without error.  If no errors are found
@@ -176,8 +176,6 @@ the demo application is not unexpectedly resetting. */
 
 /* The number of coroutines to create. */
 #define mainNUM_FLASH_COROUTINES		( 3 )
-
-void vSendString ( char *s );
 
 /*
  * The task function for the "Check" task.
@@ -219,13 +217,16 @@ int main( void )
 	DDRB = 0xFF;
 	PORTB = 0xFF;
 	
-	xSerialPortInitMinimal ( 28800, 10 );
-	vSendString ( "init\n" );
-	vDisplayInitialize ();
+	xSerialPortInitMinimal ( mainCOM_BAUD_RATE, 20 );
+	vSerialPutString ( NULL, "init\n", 5 );
+	//vDisplayInitialize ();
+	
+	//vAdcInit ( mainNUM_ADC_VALUES );
+	vAdcInit ( 10 );
 	
 	/* Test test test */
 	xTaskCreate ( vTest1, (signed char * ) "Test1", configMINIMAL_STACK_SIZE, NULL, (mainLED_TASK_PRIORITY+1), NULL );
-	xTaskCreate ( vTest2, (signed char * ) "Test2", configMINIMAL_STACK_SIZE, NULL, (mainLED_TASK_PRIORITY+1), NULL );
+	//xTaskCreate ( vTest2, (signed char * ) "Test2", configMINIMAL_STACK_SIZE, NULL, (mainLED_TASK_PRIORITY+1), NULL );
 
 	/* Start scheduler */
 	vTaskStartScheduler();
@@ -238,18 +239,35 @@ static void vTest1 ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 500;
-	char c[5];
+	signed portBASE_TYPE valx, valy;
+	char tick[5];
+	char adc[5];
 
 	xLastWakeTime = xTaskGetTickCount ();
 
 	while (1)
 	{
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
-
-		vSendString ("task1:\n");
-		itoa ( xLastWakeTime, &c, 10 );
-		vSendString ( c );
-		vSendString ( "\n\n" );
+	
+		if ( xAdcTakeSemaphore () == pdTRUE )
+		{
+			xAdcGetValue ( &valx, 0 );
+			xAdcGetValue ( &valy, 0 );
+			
+			itoa ( valx, adc, 10 );
+			vSerialPutString ( NULL, "x: ", 3);
+			vSerialPutString ( NULL, adc, 5 );
+			vSerialPutString ( NULL, "\n", 1 );
+			
+			itoa ( valy, adc, 10 );
+			vSerialPutString ( NULL, "y: ", 3);
+			vSerialPutString ( NULL, adc, 5 );
+			vSerialPutString ( NULL, "\n", 1 );
+			
+			vSerialPutString ( NULL, "\n", 1 );
+			
+			vAdcStartConversion ();
+		}
 	}	
 }
 
@@ -257,31 +275,17 @@ static void vTest2 ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 1000;
-	char c[5];
+	char tick[5];
 
 	xLastWakeTime = xTaskGetTickCount ();
 
 	while (1)
 	{
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
-
-		vSendString ("task2:\n");
-		itoa ( xLastWakeTime, &c, 10 );
-		vSendString ( c );
-		vSendString ( "\n\n" );
 	}
 }
 
 /*-----------------------------------------------------------*/
-
-void vSendString ( char *s )
-{
-	while ( *s != 0x00 )
-	{
-		xSerialPutChar ( NULL, *s, 0 );
-		s++;
-	}
-}
 
 void vApplicationIdleHook( void )
 {
@@ -290,7 +294,7 @@ void vApplicationIdleHook( void )
 
 void vApplicationStackOverflowHook ( xTaskHandle xTask, signed portCHAR *pcTaskName )
 {
-	vSendString ( "overflow\n" );
+	vSerialPutString ( NULL, "overflow\n", 9);
 }
 
 void vApplicationTickHook ( void )

@@ -117,6 +117,9 @@
     <Compile Include="Source\adc\adc.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Source\adc\adc.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="Source\croutine.c">
       <SubType>compile</SubType>
     </Compile>
@@ -136,9 +139,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\FreeRTOSConfig.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Source\include\adc.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\include\croutine.h">
@@ -163,9 +163,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\include\semphr.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Source\include\serial.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\include\StackMacros.h">
@@ -196,6 +193,9 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\serial\serial.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\serial\serial.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\tasks.c">
