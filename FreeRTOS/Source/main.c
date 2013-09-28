@@ -177,17 +177,6 @@ the demo application is not unexpectedly resetting. */
 #define mainNUM_FLASH_COROUTINES		( 3 )
 
 /*
- * The task function for the "Check" task.
- */
-static void vErrorChecks ( void *pvParameters );
-
-/*
- * Checks the unique counts of other tasks to ensure they are still operational.
- * Flashes an LED if everything is okay. 
- */
-static void prvCheckOtherTasksAreStillRunning ( void );
-
-/*
  * Called on boot to increment a count stored in the EEPROM.  This is used to 
  * ensure the CPU does not reset unexpectedly.
  */
