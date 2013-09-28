@@ -137,4 +137,3 @@ extern void vPortYield( void ) __attribute__ ( ( naked ) );
 #endif
 
 #endif /* PORTMACRO_H */
-

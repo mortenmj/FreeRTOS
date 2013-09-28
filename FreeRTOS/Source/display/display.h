@@ -10,6 +10,6 @@
 #define DISPLAY_H_
 
 void vDisplayInitialize ( void );
-void vDisplayTest ( char *s );
+void vDisplayWrite ( int line, char *s );
 
 #endif /* DISPLAY_H_ */

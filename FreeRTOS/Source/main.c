@@ -177,6 +177,9 @@ the demo application is not unexpectedly resetting. */
 /* The number of coroutines to create. */
 #define mainNUM_FLASH_COROUTINES		( 3 )
 
+void vSendChar ( char c );
+void vSendString ( char *s );
+
 /*
  * The task function for the "Check" task.
  */
@@ -200,6 +203,16 @@ static void vTest2 ( void *pvParameters );
  */
 void vApplicationIdleHook ( void );
 
+/*
+* The stack overflow hook is used to inspect stack overflow errors
+*/
+void vApplicationStackOverflowHook ( xTaskHandle xTask, signed portCHAR *pcTaskName );
+
+/*
+* The tick hook is called on every tick
+*/
+void vApplicationTickHook ( void );
+
 /*-----------------------------------------------------------*/
 
 int main( void )
@@ -210,15 +223,13 @@ int main( void )
 	UCSR1B |= (1 << TXEN1);
 	UCSR1C |= (1 << UCSZ11) | (1 << UCSZ10);
 	UBRR1 = 207;
+
+	vSendString ( "init\n" );
+	vDisplayInitialize ();
 	
 	/* Test test test */
 	xTaskCreate ( vTest1, (signed char * ) "Test1", configMINIMAL_STACK_SIZE, NULL, (mainLED_TASK_PRIORITY+1), NULL );
 	xTaskCreate ( vTest2, (signed char * ) "Test2", configMINIMAL_STACK_SIZE, NULL, (mainLED_TASK_PRIORITY+1), NULL );
-
-	while ((UCSR1A & (1 << UDRE1)) == 0);
-	UDR1 = 'i';
-
-	//vDisplayInitialize ();
 
 	/* Start scheduler */
 	vTaskStartScheduler();
@@ -230,85 +241,68 @@ int main( void )
 static void vTest1 ( void *pvParameters )
 {
 	const portTickType xDelay = 1000 / portTICK_RATE_MS;
+/*
 	portTickType xTickCount;
-	
+	char c[5];*/
+
 	while (1)
 	{
+/*
 		xTickCount = xTaskGetTickCount ();
-		while ((UCSR1A & (1 << UDRE1)) == 0);
-		UDR1 = xTickCount;
+		itoa ( xTickCount, &c, 10 );
+		vSendString ( c );
+		vSendChar ( '\n' );*/
+		vSendString ("task1\n");
 		vTaskDelay ( xDelay );
-	}		
+	}	
 }
 
 static void vTest2 ( void *pvParameters )
 {
 	const portTickType xDelay = 1000 / portTICK_RATE_MS;
+/*
 	portTickType xTickCount;
-	//char buffer[15];
-	
+	char c[5];*/
+
 	while (1)
 	{
+/*
 		xTickCount = xTaskGetTickCount ();
-		while ((UCSR1A & (1 << UDRE1)) == 0);
-		UDR1 = xTickCount;
-		vTaskDelay ( xDelay );
-		/*
-		xTickCount = xTaskGetTickCount ();
-		itoa((int)xTickCount, buffer, 10);
-		vDisplayTest ( buffer );
-		*/
+		itoa ( xTickCount, &c, 10 );
+		vDisplayWrite ( 1, c );*/
+		vSendString ("task2\n");
 		vTaskDelay ( xDelay );
 	}
 }
 
-static void vErrorChecks ( void *pvParameters )
-{
-static volatile unsigned long ulDummyVariable = 3UL;
-
-	/* The parameters are not used. */
-	( void ) pvParameters;
-
-	/* Cycle for ever, delaying then checking all the other tasks are still
-	operating without error. */
-	for( ;; )
-	{
-		vTaskDelay( mainCHECK_PERIOD );
-
-		/* Perform a bit of 32bit maths to ensure the registers used by the 
-		integer tasks get some exercise. The result here is not important - 
-		see the demo application documentation for more info. */
-		ulDummyVariable *= 3;
-		
-		prvCheckOtherTasksAreStillRunning();
-	}
-}
 /*-----------------------------------------------------------*/
 
-
-static void prvCheckOtherTasksAreStillRunning ( void )
+void vSendChar ( char c )
 {
-static portBASE_TYPE xErrorHasOccurred = pdFALSE;
-
-	/*
-	if( xAreRegTestTasksStillRunning() != pdTRUE )
-	{
-		xErrorHasOccurred = pdTRUE;
-	}
-	*/
-	
-	/*
-	if( xErrorHasOccurred == pdFALSE )
-	{
-		/ * Toggle the LED if everything is okay so we know if an error occurs even if not using console IO. * /
-		vParTestToggleLED( mainCHECK_TASK_LED );
-	}
-	*/
+	while ((UCSR1A & (1 << UDRE1)) == 0);
+	UDR1 = c;
 }
 
-/*-----------------------------------------------------------*/
+void vSendString ( char *s )
+{
+	while ( *s != 0x00 )
+	{
+		vSendChar ( *s );
+		s++;
+	}
+}
 
 void vApplicationIdleHook( void )
 {
-	vCoRoutineSchedule();
+
+}
+
+void vApplicationStackOverflowHook ( xTaskHandle xTask, signed portCHAR *pcTaskName )
+{
+	vSendString ( "overflow\n" );
+}
+
+void vApplicationTickHook ( void )
+{
+
 }

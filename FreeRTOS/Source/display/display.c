@@ -22,8 +22,10 @@ void vDisplayInitialize (void)
 	vOledInitialize ();
 }
 
-void vDisplayTest (char *s)
+void vDisplayWrite (int line, char *s)
 {
-	vOledSetLine ( 0 );
+	vOledSetDisplayOff ();
+	vOledSetLine ( line );
 	vOledPrint ( &s );
+	vOledSetDisplayOn ();
 }

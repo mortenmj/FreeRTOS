@@ -207,7 +207,7 @@ extern volatile tskTCB * volatile pxCurrentTCB;
 					"pop	r0						\n\t"	\
 					"out	__SREG__, r0			\n\t"	\
 					"pop	r0						\n\t"	\
-				);
+	);
 
 /*-----------------------------------------------------------*/
 
@@ -384,9 +384,9 @@ void vPortYieldFromTick( void ) __attribute__ ( ( naked ) );
 void vPortYieldFromTick( void )
 {
 	portSAVE_CONTEXT();
-	if( xTaskIncrementTick() != pdFALSE )
+	if ( xTaskIncrementTick () != pdFALSE )
 	{
-		vTaskSwitchContext();
+		vTaskSwitchContext ();
 	}
 	portRESTORE_CONTEXT();
 
@@ -437,7 +437,7 @@ unsigned portCHAR ucHighByte, ucLowByte;
 	 */
 	ISR ( TIMER1_COMPA_vect, ISR_NAKED )
 	{
-		vPortYieldFromTick();
+		vPortYieldFromTick ();
 		asm volatile ( "reti" );
 	}
 #else
@@ -449,6 +449,6 @@ unsigned portCHAR ucHighByte, ucLowByte;
 	 */
 	ISR ( TIMER1_COMPA_vect )
 	{
-		xTaskIncrementTick();
+		xTaskIncrementTick ();
 	}
 #endif
