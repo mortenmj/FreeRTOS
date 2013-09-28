@@ -161,6 +161,17 @@ unsigned char ucByte;
 }
 /*-----------------------------------------------------------*/
 
+void vSerialPutString( xComPortHandle pxPort, const signed char * const pcString, unsigned short usStringLength )
+{
+	/* Only one port is supported. */
+	( void ) pxPort;
+	
+	for ( int i = 0; i < usStringLength; i++ )
+	{
+		xSerialPutChar ( NULL, pcString[i], 0 );
+	}
+}
+
 signed portBASE_TYPE xSerialGetChar( xComPortHandle pxPort, signed char *pcRxedChar, portTickType xBlockTime )
 {
 	/* Only one port is supported. */
@@ -248,4 +259,3 @@ signed char cChar, cTaskWoken;
 		vInterruptOff();
 	}
 }
-
