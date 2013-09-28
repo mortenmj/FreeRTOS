@@ -180,7 +180,7 @@ the demo application is not unexpectedly resetting. */
  * Called on boot to increment a count stored in the EEPROM.  This is used to 
  * ensure the CPU does not reset unexpectedly.
  */
-static void vTest1 ( void *pvParameters );
+static void vJoystick ( void *pvParameters );
 static void vTest2 ( void *pvParameters );
 
 /*
