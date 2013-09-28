@@ -52,14 +52,6 @@
 #define VCOMH_DESELECT_0_83			0x30
 #define OLED_VCOMH_DESELECT_LEVEL	0xDB
 
-#define PAGE0 0x00
-#define PAGE1 0x01
-#define PAGE2 0x02
-#define PAGEE 0x03
-#define PAGE4 0x04
-#define PAGE5 0x05
-#define PAGE6 0x06
-#define PAGE7 0x07
 #define OLED_PAGE_START_ADDRESS 0xB0
 
 #define OLED_DISPLAY_OFFSET		0xD3
