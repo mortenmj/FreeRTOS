@@ -219,7 +219,7 @@ int main( void )
 	DDRB = 0xFF;
 	PORTB = 0xFF;
 	
-	xSerialPortInitMinimal ( 4800, 10 );
+	xSerialPortInitMinimal ( 28800, 10 );
 	vSendString ( "init\n" );
 	vDisplayInitialize ();
 	
