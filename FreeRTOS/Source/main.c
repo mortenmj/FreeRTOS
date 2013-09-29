@@ -130,6 +130,7 @@ Changes from V4.0.5
 #include "adc/adc.h"
 #include "display/display.h"
 #include "serial/serial.h"
+#include "u8glib/u8g.h"
 
 #define F_CPU 16000000UL
 #include <util/delay.h>
@@ -214,7 +215,7 @@ int main( void )
 	DDRB = 0xFF;
 	PORTB = 0xFF;
 	
-	xSerialPortInitMinimal ( mainCOM_BAUD_RATE, 20 );
+	xSerialPortInitMinimal ( mainCOM_BAUD_RATE, 100 );
 	vSerialPutString ( NULL, (signed char *) "init\n", 5 );
 	
 	//vAdcInit ( mainNUM_ADC_VALUES );
@@ -267,35 +268,32 @@ static void vJoystick ( void *pvParameters )
 static void vDisplay ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
-	const portTickType xFrequency = 20;
+	const portTickType xFrequency = 200;
 	char tick[5];
-	unsigned short i = 0;
+	u8g_t u8g;
 
 	xLastWakeTime = xTaskGetTickCount ();
 	
 	/* Display requires a short wait before initialization */
 	vTaskDelay ( mainDISPLAY_INIT_DELAY / portTICK_RATE_MS );
-	vDisplayInit ();
-	vDisplayBufferInit();
-
+	//vDisplayInit ();
+	
+	u8g_Init8BitFixedPort(&u8g, &u8g_dev_ssd1308_128x64_parallel, NULL, NULL, NULL, NULL, NULL);
+	//vDisplayBufferInit();
+	//vDisplaySetDisplayOn ();
+	
 	while (1)
 	{
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
 		
-		ultoa ( xLastWakeTime, tick, 10 );
-		vSerialPutString ( NULL, (const signed char *) tick, 8 );
-		vSerialPutString ( NULL, (const signed char*) "\n", 1 );
-		
-
-		vDisplayPutString ( 1, (const unsigned char *) tick, 5);
-		vDisplayBufferWrite();
-
-/*
-		itoa ( valx, &x, 10 );
-		itoa ( valy, &y, 10 );
-		vDisplayPutString ( 3, (const unsigned char *) x, 3);
-		vDisplayPutString ( 4, (const unsigned char *) y, 3);
-*/
+		u8g_FirstPage(&u8g);
+		do
+		{
+			u8g_DrawLine (&u8g, 7, 10, 40, 55);
+			u8g_DrawFrame (&u8g, 30, 20, 60, 40 );
+			u8g_DrawCircle (&u8g, 80, 30, 20, U8G_DRAW_ALL);
+		} while ( u8g_NextPage(&u8g) );
+		u8g_Delay(100);
 	}
 }
 

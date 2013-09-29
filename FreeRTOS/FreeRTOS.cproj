@@ -112,6 +112,7 @@
     <Folder Include="Source\portable\GCC\AT90USB1287\" />
     <Folder Include="Source\portable\MemMang\" />
     <Folder Include="Source\serial\" />
+    <Folder Include="Source\u8glib\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Source\adc\adc.c">
@@ -196,6 +197,78 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\timers.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_bitmap.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_circle.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_clip.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_com_api.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_com_atmega_parallel.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_com_io.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_cursor.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_delay.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_dev_ssd1308_128x64.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_ellipse.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_font.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_line.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_ll_api.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_page.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_pb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_pb8v1.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_rect.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_rot.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_scale.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_state.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_u16toa.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_u8toa.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Source\u8glib\u8g_virtual_screen.c">
       <SubType>compile</SubType>
     </Compile>
   </ItemGroup>
