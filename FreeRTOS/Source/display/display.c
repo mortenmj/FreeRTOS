@@ -35,12 +35,12 @@ void vDisplayInit (void)
 	vDisplaySetDisplayClock (0x80);
 	vDisplaySetContrast (0x50);
 	vDisplaySetPreChargePeriod (0x21);
-	vDisplaySetMemoryAddressingMode (PAGE_ADDRESSING_MODE);
-	vDisplaySetVcomDeselectLevel (VCOMH_DESELECT_0_83);
-	vDisplaySetIref (IREF_INTERNAL);
+	vDisplaySetMemoryAddressingMode (dispPAGE_ADDRESSING_MODE);
+	vDisplaySetVcomDeselectLevel (dispVCOMH_DESELECT_0_83);
+	vDisplaySetIref (dispIREF_INTERNAL);
 	
-	vDisplaySendCommand (DISPLAY_DISPLAY_RAM);
-	vDisplaySendCommand (DISPLAY_DISPLAY_NORMAL);
+	vDisplaySendCommand (dispDISPLAY_RAM);
+	vDisplaySendCommand (dispDISPLAY_NORMAL);
 	vDisplayClearDisplay ();
 	vDisplaySetDisplayOn ();
 }
@@ -72,83 +72,83 @@ void vDisplaySetColumn (unsigned char col)
 
 void vDisplaySetColumnAddress (unsigned char start, unsigned char end)
 {
-unsigned char cmds[3] = {DISPLAY_COLUMN_ADDRESS, start, end};
+unsigned char cmds[3] = {dispCOLUMN_ADDRESS, start, end};
 vDisplaySendCommands (3, cmds);
 }
 
 void vDisplaySetContrast (unsigned char contrast)
 {
-	unsigned char cmds[2] = { DISPLAY_CONTRAST, contrast };
+	unsigned char cmds[2] = { dispCONTRAST, contrast };
 	vDisplaySendCommands (2, cmds);
 }
 
 void vDisplaySetDisplayClock (unsigned char clock)
 {
-	unsigned char cmds[2] = { DISPLAY_DISPLAY_CLOCK, clock };
+	unsigned char cmds[2] = { dispCLOCK, clock };
 	vDisplaySendCommands (2, cmds);
 }
 
 void vDisplaySetDisplayOn (void)
 {
-	vDisplaySendCommand (DISPLAY_POWER_ON);
+	vDisplaySendCommand (dispPOWER_ON);
 }
 
 void vDisplaySetDisplayOff (void)
 {
-	vDisplaySendCommand (DISPLAY_POWER_OFF);
+	vDisplaySendCommand (dispPOWER_OFF);
 }
 
 void vDisplaySetIref (unsigned char ref)
 {
-	unsigned char cmds[2] = { DISPLAY_SELECT_IREF, ref };
+	unsigned char cmds[2] = { dispSELECT_IREF, ref };
 	vDisplaySendCommands (2, cmds);
 }
 
 void vDisplaySetLine (unsigned char line)
 {
-	vDisplaySendCommand (DISPLAY_PAGE_START_ADDRESS + line);
+	vDisplaySendCommand (dispPAGE_START_ADDRESS + line);
 	vDisplaySetColumn (0);
 }
 
 void vDisplaySetMemoryAddressingMode (unsigned char mode)
 {
-	unsigned char cmds[2] = { DISPLAY_MEMORY_ADDRESSING_MODE, mode };
+	unsigned char cmds[2] = { dispMEMORY_ADDRESSING_MODE, mode };
 	vDisplaySendCommands (2, cmds);
 }
 
 void vDisplaySetMuxRatio (unsigned char ratio)
 {	
-	unsigned char cmds[2] = { DISPLAY_MUX_RATIO, ratio };
+	unsigned char cmds[2] = { dispMUX_RATIO, ratio };
 	vDisplaySendCommands (2, cmds);
 }	
 
 void vDisplaySetPageAddress (unsigned char start, unsigned char end)
 {
-	unsigned char cmds[3] = {DISPLAY_PAGE_ADDRESS, start, end};
+	unsigned char cmds[3] = { dispPAGE_ADDRESS, start, end};
 	vDisplaySendCommands (3, cmds);
 }
 
 void vDisplaySetPosition (unsigned char line, unsigned char col)
 {
 	vDisplaySetLine (line);
-	vDisplaySetColumn (col * FONT_WIDTH);
+	vDisplaySetColumn (col * dispFONT_WIDTH);
 }
 
 void vDisplaySetPreChargePeriod (unsigned char period)
 {
-	unsigned char cmds[2] = { DISPLAY_PRE_CHARGE_PERIOD, period };
+	unsigned char cmds[2] = { dispPRE_CHARGE_PERIOD, period };
 	vDisplaySendCommands (2, cmds);
 }
 
 void vDisplaySetVcomDeselectLevel (unsigned char level)
 {
-	unsigned char cmds[2] = { DISPLAY_VCOMH_DESELECT_LEVEL, level };
+	unsigned char cmds[2] = { dispVCOMH_DESELECT_LEVEL, level };
 	vDisplaySendCommands (2, cmds);
 }
 
 void vDisplayClearDisplay (void)
 {
-	for (unsigned char line = 0; line < PAGES; line++)
+	for (unsigned char line = 0; line < dispPAGES; line++)
 	{
 		vDisplayClearLine (line);
 	}
@@ -158,7 +158,7 @@ void vDisplayClearLine (unsigned char line)
 {
 	vDisplaySetLine (line);
 
-	for (unsigned char col = 0; col < COLUMNS; col++)
+	for (unsigned char col = 0; col < dispCOLUMNS; col++)
 	{
 		vDisplaySendData (0);
 	}
@@ -177,7 +177,7 @@ void vDisplayPutString ( const char line, const signed char * const pcString, un
 
 void vDisplayPutchar (char c)
 {
-	for (unsigned char i = 0; i < FONT_WIDTH; i++)
+	for (unsigned char i = 0; i < dispFONT_WIDTH; i++)
 	{
 		vDisplaySendData (pgm_read_byte (&font[c - ' '][i]));
 	}

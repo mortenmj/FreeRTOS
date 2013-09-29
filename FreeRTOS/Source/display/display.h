@@ -11,53 +11,53 @@
 
 #include <stdint.h>
 
-#define ROWS		64
-#define COLUMNS		128
-#define PAGES		8
-#define PAGE_WIDTH	(ROWS/8)
-#define FONT_WIDTH	8
-#define CHARS		(COLUMNS / FONT_WIDTH)
-#define MAX_PAGE	(PAGES - 1)
-#define MAX_COL		(COLUMNS - 1)
+#define dispROWS		64
+#define dispCOLUMNS		128
+#define dispPAGES		8
+#define dispPAGE_WIDTH	(ROWS/8)
+#define dispFONT_WIDTH	8
+#define dispCHARS		(COLUMNS / FONT_WIDTH)
+#define dispMAX_PAGE	(PAGES - 1)
+#define dispMAX_COL		(COLUMNS - 1)
 
-#define DISPLAY_RESET					0x08
+#define dispRESET					0x08
 
-#define HORIZONTAL_ADDRESSING_MODE		0x00
-#define VERTICAL_ADDRESSING_MODE		0x01
-#define PAGE_ADDRESSING_MODE			0x02
-#define DISPLAY_MEMORY_ADDRESSING_MODE	0x20
+#define dispHORIZONTAL_ADDRESSING_MODE		0x00
+#define dispVERTICAL_ADDRESSING_MODE		0x01
+#define dispPAGE_ADDRESSING_MODE			0x02
+#define dispMEMORY_ADDRESSING_MODE	0x20
 
-#define DISPLAY_COLUMN_ADDRESS			0x21
-#define DISPLAY_PAGE_ADDRESS			0x22
-#define DISPLAY_CONTRAST				0x81
-#define DISPLAY_SEGMENT_REMAP_START		0xA0
-#define DISPLAY_SEGMENT_REMAP_END		0xA1
-#define DISPLAY_DISPLAY_RAM				0xA4
-#define DISPLAY_DISPLAY_ON				0xA5
-#define DISPLAY_DISPLAY_NORMAL			0xA6
-#define DISPLAY_DISPLAY_INVERSE			0xA7
-#define DISPLAY_MUX_RATIO				0xA8
+#define dispCOLUMN_ADDRESS			0x21
+#define dispPAGE_ADDRESS			0x22
+#define dispCONTRAST				0x81
+#define dispSEGMENT_REMAP_START		0xA0
+#define dispSEGMENT_REMAP_END		0xA1
+#define dispDISPLAY_RAM				0xA4
+#define dispENABLE				0xA5
+#define dispDISPLAY_NORMAL			0xA6
+#define dispDISPLAY_INVERSE			0xA7
+#define dispMUX_RATIO				0xA8
 
-#define IREF_INTERNAL					0x00
-#define IREF_EXTERNAL					0x10
-#define DISPLAY_SELECT_IREF				0xAD
+#define dispIREF_INTERNAL					0x00
+#define dispIREF_EXTERNAL					0x10
+#define dispSELECT_IREF				0xAD
 
-#define DISPLAY_POWER_OFF				0xAE
-#define DISPLAY_POWER_ON				0xAF
-#define DISPLAY_CMD_MODE				0x80
-#define DISPLAY_DATA_MODE				0x40
+#define dispPOWER_OFF				0xAE
+#define dispPOWER_ON				0xAF
+#define dispCMD_MODE				0x80
+#define dispDATA_MODE				0x40
 
-#define VCOMH_DESELECT_0_65				0x00
-#define VCOMH_DESELECT_0_77				0x20
-#define VCOMH_DESELECT_0_83				0x30
-#define DISPLAY_VCOMH_DESELECT_LEVEL	0xDB
+#define dispVCOMH_DESELECT_0_65				0x00
+#define dispVCOMH_DESELECT_0_77				0x20
+#define dispVCOMH_DESELECT_0_83				0x30
+#define dispVCOMH_DESELECT_LEVEL	0xDB
 
-#define DISPLAY_PAGE_START_ADDRESS		0xB0
+#define dispPAGE_START_ADDRESS		0xB0
 
-#define DISPLAY_DISPLAY_OFFSET			0xD3
-#define DISPLAY_DISPLAY_CLOCK			0xD5
-#define DISPLAY_PRE_CHARGE_PERIOD		0xD9
-#define DISPLAY_COM_PINS				0xDA
+#define dispOFFSET			0xD3
+#define dispCLOCK			0xD5
+#define dispPRE_CHARGE_PERIOD		0xD9
+#define dispCOM_PINS				0xDA
 
 void vDisplayInit (void);
 void vDisplaySendCommand (unsigned char cmd);
