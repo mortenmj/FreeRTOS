@@ -28,6 +28,24 @@ local.properties
 # PDT-specific
 .buildpath
 
+##########################
+## Atmel Studio 6
+##########################
+
+*.atsuo
+*.d
+*.eep
+*.elf
+*.hex
+*.lss
+*.map
+*.o
+*.srec
+*.mk
+*.S
+Makefile
+TcfTransactionLog.csv
+
 
 #################
 ## Visual Studio
