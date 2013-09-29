@@ -16,6 +16,11 @@
 volatile unsigned char *ucCommandAddress = (unsigned char *) 0x4000;
 volatile unsigned char *ucDataAddress = (unsigned char *) 0x4200;
 
+unsigned char buffer_[2][dispBUFSIZE];
+unsigned char *current_;
+unsigned char *next_;
+
+
 void vDisplayInit (void)
 {
 	/* Initialize external memory interface */
@@ -35,13 +40,12 @@ void vDisplayInit (void)
 	vDisplaySetDisplayClock (0x80);
 	vDisplaySetContrast (0x50);
 	vDisplaySetPreChargePeriod (0x21);
-	vDisplaySetMemoryAddressingMode (dispPAGE_ADDRESSING_MODE);
+	vDisplaySetMemoryAddressingMode (dispHORIZONTAL_ADDRESSING_MODE);
 	vDisplaySetVcomDeselectLevel (dispVCOMH_DESELECT_0_83);
 	vDisplaySetIref (dispIREF_INTERNAL);
 	
 	vDisplaySendCommand (dispDISPLAY_RAM);
 	vDisplaySendCommand (dispDISPLAY_NORMAL);
-	vDisplayClearDisplay ();
 	vDisplaySetDisplayOn ();
 }
 
@@ -146,39 +150,69 @@ void vDisplaySetVcomDeselectLevel (unsigned char level)
 	vDisplaySendCommands (2, cmds);
 }
 
-void vDisplayClearDisplay (void)
+void vDisplayClear (void)
 {
-	for (unsigned char line = 0; line < dispPAGES; line++)
+	for (unsigned char i = 0; i < dispPAGES; i++)
 	{
-		vDisplayClearLine (line);
+		vDisplayClearLine (i);
 	}
 }
 
-void vDisplayClearLine (unsigned char line)
+void vDisplayClearLine ( unsigned char cLine )
 {
-	vDisplaySetLine (line);
-
-	for (unsigned char col = 0; col < dispCOLUMNS; col++)
+	/* Line n starts at n*dispCOLUMNS pixels */
+	for (unsigned char i = 0; i < dispCOLUMNS; i++)
 	{
-		vDisplaySendData (0);
+		next_[ ( cLine * dispCOLUMNS ) + i ] = 0x00;
 	}
 }
 
-void vDisplayPutString ( const char line, const signed char * const pcString, unsigned short usStringLength )
+void vDisplayPutString ( const unsigned char cLine, const signed char * const pcString, unsigned short usStringLength )
 {
-	vDisplaySetLine ( line );
-	unsigned short i;
+	unsigned short i = 0;
 	
 	while ( i < usStringLength && pcString[i] != 0x00)
 	{
-		vDisplayPutchar ( pcString[i++] );
+		vDisplayPutChar ( cLine, i, pcString[i++] );
 	}
 }
 
-void vDisplayPutchar (char c)
+void vDisplayPutChar ( const unsigned char cLine, const unsigned char cPos, const unsigned char cOutChar )
 {
 	for (unsigned char i = 0; i < dispFONT_WIDTH; i++)
 	{
-		vDisplaySendData (pgm_read_byte (&font[c - ' '][i]));
+		next_[ cLine * dispCOLUMNS + cPos * dispFONT_WIDTH + i ] = pgm_read_byte ( &font[ cOutChar - ' ' ][ i ] );
 	}
+}
+
+void vDisplayBufferInit ( void )
+{
+	current_ = buffer_[0];
+	next_ = buffer_[1];
+}
+
+void vDisplayBufferWrite ( void )
+{
+	vDisplaySetLine ( 0 );
+	for (unsigned short i = 0; i < dispBUFSIZE; i++)
+	{
+		vDisplaySendData ( current_[i] );
+	}
+	
+	vDisplayBufferSwap ();
+}
+
+void vDisplayBufferClear ( void )
+{
+	for (unsigned short i = 0; i < dispBUFSIZE; i++)
+	{
+		next_[i] = 0x00;
+	}
+}
+
+void vDisplayBufferSwap ( void )
+{
+	unsigned char *tmp = current_;
+	current_ = next_;
+	next_ = tmp;
 }

@@ -185,6 +185,7 @@ the demo application is not unexpectedly resetting. */
  */
 static void vJoystick ( void *pvParameters );
 static void vDisplay ( void *pvParameters );
+static void vTest ( void *pvParameters );
 
 /*
  * The idle hook is used to scheduler co-routines.
@@ -221,7 +222,8 @@ int main( void )
 		
 	/* Task to process joystick position from ADC */
 	xTaskCreate ( vJoystick, (signed char * ) "Joystick", configMINIMAL_STACK_SIZE, NULL, mainJOYSTICK_TASK_PRIORITY, NULL );
-	xTaskCreate ( vDisplay, (signed char * ) "Display", configMINIMAL_STACK_SIZE, NULL, mainDISPLAY_TASK_PRIORITY, NULL );
+	xTaskCreate ( vDisplay, (signed char * ) "Display", ( configDISPLAY_STACK_SIZE ), NULL, mainDISPLAY_TASK_PRIORITY, NULL );
+	xTaskCreate ( vTest, (signed char * ) "Test", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL );
 
 	/* Start scheduler */
 	vTaskStartScheduler();
@@ -229,6 +231,17 @@ int main( void )
 	return 0;
 }
 /*-----------------------------------------------------------*/
+
+static void vTest ( void *pvParameters )
+{
+	const portTickType xDelay = 5000 / portTICK_RATE_MS;
+	
+	while (1)
+	{
+		vTaskDelay ( xDelay );
+		//vDisplayClear ();
+	}		
+}
 
 static void vJoystick ( void *pvParameters )
 {
@@ -254,33 +267,35 @@ static void vJoystick ( void *pvParameters )
 static void vDisplay ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
-	const portTickType xFrequency = 1000;
-	signed char tick[5];
-	signed char x[3];
-	signed char y[3];
+	const portTickType xFrequency = 20;
+	char tick[5];
+	unsigned short i = 0;
 
 	xLastWakeTime = xTaskGetTickCount ();
 	
 	/* Display requires a short wait before initialization */
 	vTaskDelay ( mainDISPLAY_INIT_DELAY / portTICK_RATE_MS );
 	vDisplayInit ();
+	vDisplayBufferInit();
 
 	while (1)
 	{
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
 		
-		itoa ( xLastWakeTime, &tick, 10 );
-
-		itoa ( valx, &x, 10 );
-		itoa ( valy, &y, 10 );
-
-		vSerialPutString ( NULL, (signed char *) "Display\n", 8 );
+		ultoa ( xLastWakeTime, tick, 10 );
+		vSerialPutString ( NULL, (const signed char *) tick, 8 );
+		vSerialPutString ( NULL, (const signed char*) "\n", 1 );
+		
 
 		vDisplayPutString ( 1, (const unsigned char *) tick, 5);
+		vDisplayBufferWrite();
 
+/*
+		itoa ( valx, &x, 10 );
+		itoa ( valy, &y, 10 );
 		vDisplayPutString ( 3, (const unsigned char *) x, 3);
 		vDisplayPutString ( 4, (const unsigned char *) y, 3);
-
+*/
 	}
 }
 

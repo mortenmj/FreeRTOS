@@ -14,11 +14,12 @@
 #define dispROWS		64
 #define dispCOLUMNS		128
 #define dispPAGES		8
-#define dispPAGE_WIDTH	(ROWS/8)
+#define dispPAGE_WIDTH	(dispROWS/8)
 #define dispFONT_WIDTH	8
-#define dispCHARS		(COLUMNS / FONT_WIDTH)
-#define dispMAX_PAGE	(PAGES - 1)
-#define dispMAX_COL		(COLUMNS - 1)
+#define dispCHARS		(dispCOLUMNS / dispFONT_WIDTH)
+#define dispMAX_PAGE	(dispPAGES - 1)
+#define dispMAX_COL		(dispCOLUMNS - 1)
+#define dispBUFSIZE		8*dispCOLUMNS
 
 #define dispRESET					0x08
 
@@ -33,7 +34,7 @@
 #define dispSEGMENT_REMAP_START		0xA0
 #define dispSEGMENT_REMAP_END		0xA1
 #define dispDISPLAY_RAM				0xA4
-#define dispENABLE				0xA5
+#define dispENABLE					0xA5
 #define dispDISPLAY_NORMAL			0xA6
 #define dispDISPLAY_INVERSE			0xA7
 #define dispMUX_RATIO				0xA8
@@ -79,10 +80,14 @@ void vDisplaySetPosition (unsigned char line, unsigned char col);
 void vDisplaySetPreChargePeriod (unsigned char period);
 void vDisplaySetVcomDeselectLevel (unsigned char level);
 
-void vDisplayClearDisplay (void);
-void vDisplayClearLine (unsigned char line);
-void vDisplayPutString ( const char line, const signed char * const pcString, unsigned short usStringLength );
-void vDisplayPutchar (char c);
+void vDisplayClear ( void );
+void vDisplayClearLine ( unsigned char cLine );
+void vDisplayPutString ( const unsigned char cLine, const signed char * const pcString, unsigned short usStringLength );
+void vDisplayPutChar ( const unsigned char cLine, const unsigned char cPos, const unsigned char cOutChar );
 
+void vDisplayBufferInit ( void );
+void vDisplayBufferWrite ( void );
+void vDisplayBufferSwap ( void );
+void vDisplayBufferClear ( void );
 
 #endif /* OLED_H_ */
