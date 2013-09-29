@@ -201,6 +201,11 @@ void vApplicationStackOverflowHook ( xTaskHandle xTask, signed portCHAR *pcTaskN
 */
 void vApplicationTickHook ( void );
 
+/* 
+ * This is ugly and temporary
+ */
+signed char valx, valy;
+
 /*-----------------------------------------------------------*/
 
 int main( void )
@@ -229,15 +234,9 @@ static void vJoystick ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 1000;
-	signed portBASE_TYPE valx, valy;
-	//char tick[5];
-	char adc[5];
 
 	xLastWakeTime = xTaskGetTickCount ();
 
-	vTaskDelayUntil ( xLastWakeTime, 150 );
-	vDisplayInit ();
-	
 	while (1)
 	{
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
@@ -246,18 +245,6 @@ static void vJoystick ( void *pvParameters )
 		{
 			xAdcGetValue ( &valx, 0 );
 			xAdcGetValue ( &valy, 0 );
-			
-			itoa ( valx, adc, 10 );
-			vSerialPutString ( NULL, (signed char *) "x: ", 3);
-			vSerialPutString ( NULL, (const signed char *) adc, 5 );
-			vSerialPutString ( NULL, (signed char *) "\n", 1 );
-			
-			itoa ( valy, adc, 10 );
-			vSerialPutString ( NULL, (signed char *) "y: ", 3);
-			vSerialPutString ( NULL, (const signed char *) adc, 5 );
-			vSerialPutString ( NULL, (signed char *) "\n", 1 );
-			
-			vSerialPutString ( NULL, (signed char *) "\n", 1 );
 			
 			vAdcStartConversion ();
 		}
@@ -268,7 +255,9 @@ static void vDisplay ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
 	const portTickType xFrequency = 1000;
-	char tick[5];
+	signed char tick[5];
+	signed char x[3];
+	signed char y[3];
 
 	xLastWakeTime = xTaskGetTickCount ();
 	
@@ -281,11 +270,17 @@ static void vDisplay ( void *pvParameters )
 		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
 		
 		itoa ( xLastWakeTime, &tick, 10 );
-		vSerialPutString ( NULL, (signed char *) "test\n", 5 );
 
-		vDisplayPutString ( 1, (const signed char *) tick, 5);
-		vDisplayPutString ( 4, (signed char *) "morten", 6);
-		vDisplayPutString ( 5, (signed char *) "mjelva", 6 );
+		itoa ( valx, &x, 10 );
+		itoa ( valy, &y, 10 );
+
+		vSerialPutString ( NULL, (signed char *) "Display\n", 8 );
+
+		vDisplayPutString ( 1, (const unsigned char *) tick, 5);
+
+		vDisplayPutString ( 3, (const unsigned char *) x, 3);
+		vDisplayPutString ( 4, (const unsigned char *) y, 3);
+
 	}
 }
 

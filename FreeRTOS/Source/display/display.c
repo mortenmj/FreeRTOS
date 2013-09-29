@@ -167,9 +167,11 @@ void vDisplayClearLine (unsigned char line)
 void vDisplayPutString ( const char line, const signed char * const pcString, unsigned short usStringLength )
 {
 	vDisplaySetLine ( line );
-	for (unsigned short i = 0; i < usStringLength; i++)
+	unsigned short i;
+	
+	while ( i < usStringLength && pcString[i] != 0x00)
 	{
-		vDisplayPutchar ( pcString[i] );
+		vDisplayPutchar ( pcString[i++] );
 	}
 }
 
