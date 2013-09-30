@@ -86,6 +86,8 @@
       <Value>../Source/include</Value>
       <Value>../Source/portable/GCC/AT90USB1287</Value>
       <Value>..</Value>
+      <Value>../u8glib</Value>
+      <Value>../m2tklib</Value>
     </ListValues>
   </avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
@@ -104,7 +106,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Folder Include="adc\" />
-    <Folder Include="display\" />
+    <Folder Include="m2tklib" />
     <Folder Include="serial\" />
     <Folder Include="Source\" />
     <Folder Include="Source\include\" />
@@ -121,16 +123,268 @@
     <Compile Include="adc\adc.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="display\display.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="display\display.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="display\font_8x8.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="FreeRTOSConfig.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2align.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2dfs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2draw.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2eh2bd.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2eh2bs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2eh4bd.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2eh4bs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2eh6bs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ehts.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2el2lmenu.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elalign.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elbutton.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elbuttonptr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elcombo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elcomboptr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elfnfmt.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elhide.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elinfo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellabel.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellabelfn.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellabelp.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellabelptr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellistbase.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellistcalc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellistgrid.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellisth.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellistv.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ellistxy.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elradio.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elroot.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2els8base.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2els8num.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elsb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elsetval.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elslbase.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elspace.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elstr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elstrlist.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elstrptr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elstrup.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elsubutl.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2eltext.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2eltoggle.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2eltsk.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elu32.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elu8base.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elu8hs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elu8num.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2elxbm.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2esavru8g.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2fnarg.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2gfx.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2gfxutl.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ghdummy.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ghu8g.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ghu8gbf.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ghu8gbfs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ghu8gfb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ghu8gffs.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ghu8gicon.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2ghu8gutl.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2key.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2msg.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navdatadn.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navdataup.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navfirst.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navinit.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navlast.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navnext.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navprev.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navroot.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navupdn.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2navutl.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2null.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2obj.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2opt.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2pin.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2rom.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2usrnext.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2usrprev.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2usrupdn.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2utl.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2utls8d.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2utlstrdat.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="m2tklib\m2utlu8d.c">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
