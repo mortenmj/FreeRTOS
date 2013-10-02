@@ -79,8 +79,10 @@
  * See http://www.freertos.org/a00110.html.
  *----------------------------------------------------------*/
 
+#define F_CPU 16000000UL
+
 #define configUSE_PREEMPTION		1
-#define configCPU_CLOCK_HZ          ( ( unsigned long ) 16000000 )
+#define configCPU_CLOCK_HZ          ( ( unsigned long ) F_CPU )
 #define configTICK_RATE_HZ			( ( portTickType ) 1000 )
 #define configMAX_PRIORITIES		( ( unsigned portBASE_TYPE ) 4 )
 #define configMINIMAL_STACK_SIZE	( ( unsigned short ) 100 )

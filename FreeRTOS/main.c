@@ -1,117 +1,3 @@
-/*
-    FreeRTOS V7.5.2 - Copyright (C) 2013 Real Time Engineers Ltd.
-
-    VISIT http://www.FreeRTOS.org TO ENSURE YOU ARE USING THE LATEST VERSION.
-
-    ***************************************************************************
-     *                                                                       *
-     *    FreeRTOS provides completely free yet professionally developed,    *
-     *    robust, strictly quality controlled, supported, and cross          *
-     *    platform software that has become a de facto standard.             *
-     *                                                                       *
-     *    Help yourself get started quickly and support the FreeRTOS         *
-     *    project by purchasing a FreeRTOS tutorial book, reference          *
-     *    manual, or both from: http://www.FreeRTOS.org/Documentation        *
-     *                                                                       *
-     *    Thank you!                                                         *
-     *                                                                       *
-    ***************************************************************************
-
-    This file is part of the FreeRTOS distribution.
-
-    FreeRTOS is free software; you can redistribute it and/or modify it under
-    the terms of the GNU General Public License (version 2) as published by the
-    Free Software Foundation >>!AND MODIFIED BY!<< the FreeRTOS exception.
-
-    >>! NOTE: The modification to the GPL is included to allow you to distribute
-    >>! a combined work that includes FreeRTOS without being obliged to provide
-    >>! the source code for proprietary components outside of the FreeRTOS
-    >>! kernel.
-
-    FreeRTOS is distributed in the hope that it will be useful, but WITHOUT ANY
-    WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS
-    FOR A PARTICULAR PURPOSE.  Full license text is available from the following
-    link: http://www.freertos.org/a00114.html
-
-    1 tab == 4 spaces!
-
-    ***************************************************************************
-     *                                                                       *
-     *    Having a problem?  Start by reading the FAQ "My application does   *
-     *    not run, what could be wrong?"                                     *
-     *                                                                       *
-     *    http://www.FreeRTOS.org/FAQHelp.html                               *
-     *                                                                       *
-    ***************************************************************************
-
-    http://www.FreeRTOS.org - Documentation, books, training, latest versions,
-    license and Real Time Engineers Ltd. contact details.
-
-    http://www.FreeRTOS.org/plus - A selection of FreeRTOS ecosystem products,
-    including FreeRTOS+Trace - an indispensable productivity tool, a DOS
-    compatible FAT file system, and our tiny thread aware UDP/IP stack.
-
-    http://www.OpenRTOS.com - Real Time Engineers ltd license FreeRTOS to High
-    Integrity Systems to sell under the OpenRTOS brand.  Low cost OpenRTOS
-    licenses offer ticketed support, indemnification and middleware.
-
-    http://www.SafeRTOS.com - High Integrity Systems also provide a safety
-    engineered and independently SIL3 certified version for use in safety and
-    mission critical applications that require provable dependability.
-
-    1 tab == 4 spaces!
-*/
-
-/*
- * Creates all the demo application tasks, then starts the scheduler.  The WEB
- * documentation provides more details of the demo application tasks.
- * 
- * Main. c also creates a task called "Check".  This only executes every three 
- * seconds but has the highest priority so is guaranteed to get processor time.  
- * Its main function is to check that all the other tasks are still operational.  
- * Each task that does not flash an LED maintains a unique count that is 
- * incremented each time the task successfully completes its function.  Should 
- * any error occur within such a task the count is permanently halted.  The 
- * check task inspects the count of each task to ensure it has changed since
- * the last time the check task executed.  If all the count variables have 
- * changed all the tasks are still executing error free, and the check task
- * toggles an LED.  Should any task contain an error at any time the LED toggle
- * will stop.
- *
- * The LED flash and communications test tasks do not maintain a count.
- */
-
-/*
-Changes from V1.2.0
-	
-	+ Changed the baud rate for the serial test from 19200 to 57600.
-
-Changes from V1.2.3
-
-	+ The integer and comtest tasks are now used when the cooperative scheduler 
-	  is being used.  Previously they were only used with the preemptive
-	  scheduler.
-
-Changes from V1.2.5
-
-	+ Set the baud rate to 38400.  This has a smaller error percentage with an
-	  8MHz clock (according to the manual).
-
-Changes from V2.0.0
-
-	+ Delay periods are now specified using variables and constants of
-	  portTickType rather than unsigned long.
-
-Changes from V2.6.1
-
-	+ The IAR and WinAVR AVR ports are now maintained separately.
-
-Changes from V4.0.5
-
-	+ Modified to demonstrate the use of co-routines.
-
-*/
-
 #include <stdlib.h>
 #include <string.h>
 #include <avr/io.h>
@@ -128,11 +14,15 @@ Changes from V4.0.5
 
 /* Includes for our tasks */
 #include "adc/adc.h"
-#include "display/display.h"
 #include "serial/serial.h"
-#include "u8glib/u8g.h"
 
-#define F_CPU 16000000UL
+#include "u8g.h"
+//#include "m2.h"
+//#include "m2ghu8g.h"
+#include "can/can_ll.h"
+#include "can/MCP2515.h"
+#include "can/MCP2515define.h"
+
 #include <util/delay.h>
 
 #include <avr/interrupt.h>
@@ -151,7 +41,7 @@ Changes from V4.0.5
 /* Priority definitions for our tasks. */
 
 /* Strict timing */
-#define mainBOARD_TASK_PRIORITY			( tskIDLE_PRIORITY + 2 )
+#define mainCONTROL_TASK_PRIORITY		( tskIDLE_PRIORITY + 3 )
 
 /* Deadline timing */
 #define mainJOYSTICK_TASK_PRIORITY		( tskIDLE_PRIORITY + 1 )
@@ -164,7 +54,13 @@ Changes from V4.0.5
 #define mainCOM_BAUD_RATE				( ( unsigned long ) 28800 )
 
 /* Delay needed before initializing display */
-#define mainDISPLAY_INIT_DELAY			150
+#define mainDISPLAY_INIT_DELAY			500
+#define mainCAN_INIT_DELAY				500
+
+/* Task frequencies */
+#define mainCONTROL_TASK_FREQUENCY		( ( const portTickType ) 500 )
+#define mainJOYSTICK_TASK_FREQUENCY		( ( const portTickType ) 1000 )
+#define mainDISPLAY_TASK_FREQUENCY		( ( const portTickType ) 500 )
 
 /* LED used by the serial port tasks.  This is toggled on each character Tx,
 and mainCOM_TEST_LED + 1 is toggles on each character Rx. */
@@ -180,13 +76,15 @@ the demo application is not unexpectedly resetting. */
 /* The number of coroutines to create. */
 #define mainNUM_FLASH_COROUTINES		( 3 )
 
+//M2_LABEL(hello_world_label, NULL, "Hello World");
+
 /*
  * Called on boot to increment a count stored in the EEPROM.  This is used to 
  * ensure the CPU does not reset unexpectedly.
  */
 static void vJoystick ( void *pvParameters );
 static void vDisplay ( void *pvParameters );
-static void vTest ( void *pvParameters );
+static void vControl ( void *pvParameters );
 
 /*
  * The idle hook is used to scheduler co-routines.
@@ -207,14 +105,32 @@ void vApplicationTickHook ( void );
  * This is ugly and temporary
  */
 signed char valx, valy;
+uint8_t canstat;
+uint8_t canintf;
+uint8_t cnf1;
+uint8_t cnf2;
+uint8_t cnf3;
+uint8_t txint;
+mcp2515_can_frame_t Frame;
 
 /*-----------------------------------------------------------*/
 
 int main( void )
 {	
+	/*
 	DDRB = 0xFF;
 	PORTB = 0xFF;
+	*/
 	
+	/* Connect PD4 & PD6 to LED0 & LED1 */
+	DDRD |= (1 << PD4) | (1 << PD6);
+	
+	PORTD |= (1 << PD4);
+	PORTD |= (1 << PD6);
+	
+	PCMSK0 |= (1 << PCINT4);
+	PCICR |= (1 << PCIE0);
+		
 	xSerialPortInitMinimal ( mainCOM_BAUD_RATE, 100 );
 	vSerialPutString ( NULL, (signed char *) "init\n", 5 );
 	
@@ -222,9 +138,9 @@ int main( void )
 	vAdcInit ( 10 );
 		
 	/* Task to process joystick position from ADC */
-	xTaskCreate ( vJoystick, (signed char * ) "Joystick", configMINIMAL_STACK_SIZE, NULL, mainJOYSTICK_TASK_PRIORITY, NULL );
+	//xTaskCreate ( vJoystick, (signed char * ) "Joystick", configMINIMAL_STACK_SIZE, NULL, mainJOYSTICK_TASK_PRIORITY, NULL );
 	xTaskCreate ( vDisplay, (signed char * ) "Display", ( configDISPLAY_STACK_SIZE ), NULL, mainDISPLAY_TASK_PRIORITY, NULL );
-	xTaskCreate ( vTest, (signed char * ) "Test", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL );
+	xTaskCreate ( vControl, (signed char * ) "Control", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL );
 
 	/* Start scheduler */
 	vTaskStartScheduler();
@@ -233,27 +149,40 @@ int main( void )
 }
 /*-----------------------------------------------------------*/
 
-static void vTest ( void *pvParameters )
+static void vControl ( void *pvParameters )
 {
-	const portTickType xDelay = 5000 / portTICK_RATE_MS;
+	portTickType xLastWakeTime;
+	unsigned char foo;
 	
+	xLastWakeTime = xTaskGetTickCount ();
+	
+	/* CAN init */	
+	vCanInit ();
+		
 	while (1)
 	{
-		vTaskDelay ( xDelay );
-		//vDisplayClear ();
-	}		
+		vTaskDelayUntil ( &xLastWakeTime, mainCONTROL_TASK_FREQUENCY );
+		
+		vCanLLTest (&Frame);
+
+		vCanLLRead (MCP2515_CANSTAT, &canstat);
+		vCanLLRead (MCP2515_CANINTF, &canintf);
+
+		vCanLLRead (MCP2515_CNF1, &cnf1);
+		vCanLLRead (MCP2515_CNF2, &cnf2);
+		vCanLLRead (MCP2515_CNF3, &cnf3);
+	}
 }
 
 static void vJoystick ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
-	const portTickType xFrequency = 1000;
 
 	xLastWakeTime = xTaskGetTickCount ();
 
 	while (1)
 	{
-		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
+		vTaskDelayUntil ( &xLastWakeTime, mainJOYSTICK_TASK_FREQUENCY );
 	
 		if ( xAdcTakeSemaphore () == pdTRUE )
 		{
@@ -268,32 +197,64 @@ static void vJoystick ( void *pvParameters )
 static void vDisplay ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
-	const portTickType xFrequency = 200;
-	char tick[5];
 	u8g_t u8g;
-
+	char cCanstat[4];
+	char cCanintf[4];
+	char cCnf1[4];
+	char cCnf2[4];
+	char cCnf3[4];
+	char cTxint[4];
+	char cFrame[4];
+	
 	xLastWakeTime = xTaskGetTickCount ();
 	
 	/* Display requires a short wait before initialization */
-	vTaskDelay ( mainDISPLAY_INIT_DELAY / portTICK_RATE_MS );
-	//vDisplayInit ();
+	vTaskDelay ( mainDISPLAY_INIT_DELAY / portTICK_RATE_MS );	
+	u8g_Init8BitFixedPort(&u8g, &u8g_dev_ssd1308_128x64_parallel, 0, 0, 0, 0, 0);
+	u8g_SetFont (&u8g, u8g_font_5x8);
 	
-	u8g_Init8BitFixedPort(&u8g, &u8g_dev_ssd1308_128x64_parallel, NULL, NULL, NULL, NULL, NULL);
-	//vDisplayBufferInit();
-	//vDisplaySetDisplayOn ();
+/*
+	m2_Init (&hello_world_label, m2_es_avr_u8g, m2_eh_6bs, m2_gh_u8g_bfs);
+	m2_SetU8g(&u8g, m2_u8g_box_icon);
+	m2_SetFont(0, (const void *)u8g_font_5x8);
+*/
 	
 	while (1)
 	{
-		vTaskDelayUntil ( &xLastWakeTime, xFrequency );
+		vTaskDelayUntil ( &xLastWakeTime, mainDISPLAY_TASK_FREQUENCY );
+		
+		utoa (canstat, cCanstat, 10);
+		utoa (canintf, cCanintf, 10);
+		utoa (cnf1, cCnf1, 10);
+		utoa (cnf2, cCnf2, 10);
+		utoa (cnf3, cCnf3, 10);
+		
+		utoa (Frame.data[0], cFrame, 10);
 		
 		u8g_FirstPage(&u8g);
 		do
 		{
-			u8g_DrawLine (&u8g, 7, 10, 40, 55);
-			u8g_DrawFrame (&u8g, 30, 20, 60, 40 );
-			u8g_DrawCircle (&u8g, 80, 30, 20, U8G_DRAW_ALL);
-		} while ( u8g_NextPage(&u8g) );
-		u8g_Delay(100);
+			u8g_DrawStr ( &u8g, 0, 10, "CANSTAT: " );
+			u8g_DrawStr ( &u8g, 45, 10, cCanstat );
+			
+			u8g_DrawStr ( &u8g, 0, 20, "CANINTF: " );
+			u8g_DrawStr ( &u8g, 45, 20, cCanintf );
+
+			u8g_DrawStr ( &u8g, 0, 30, "CNF1: " );
+			u8g_DrawStr ( &u8g, 45, 30, cCnf1 );
+			
+			u8g_DrawStr ( &u8g, 0, 40, "CNF2: " );
+			u8g_DrawStr ( &u8g, 45, 40, cCnf2 );
+			
+			u8g_DrawStr ( &u8g, 0, 50, "CNF3: " );
+			u8g_DrawStr ( &u8g, 45, 50, cCnf3 );
+			
+			u8g_DrawLine ( &u8g, 64, 0, 64, 64 );
+			
+			u8g_DrawStr ( &u8g, 70, 10, "Frame: " );
+			u8g_DrawStr ( &u8g, 105, 10, cFrame );
+
+		} while ( u8g_NextPage( &u8g ) );
 	}
 }
 
@@ -313,3 +274,8 @@ void vApplicationTickHook ( void )
 {
 
 }
+
+ISR (INT0_vect)
+{
+	txint = 1;
+}	
