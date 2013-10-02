@@ -45,34 +45,54 @@
 
 #include "MCP2515define.h"
 #include "MCP2515.h"
+#include "spi.h"
 
 #include <assert.h>
 #include <stdint.h>
 #include <stdlib.h>
 
+#define mcpDDR							DDRB
+#define mcpPORT							PORTB
+#define mcpSS							( ( unsigned char ) ( 1 << PB0 ) )
+
 /*! \fn uint8_t mcp2515_spi_port_init(void)
  *  \brief	Provide the initiation of the SPI port to be use for the MCP2515 transmission.
  */
-extern void mcp2515_spi_port_init(void);
+void mcp2515_spi_port_init(void)
+{
+	spi_init ();
+	
+	/* Set the CS pin as output */
+	mcpDDR |= mcpSS;
+}
 
 /*! \fn void mcp2515_spi_select(void)
  *  \brief	Provide the selection of the MCP2515 on the SPI bus to be use for the transmission.
  */
-extern void mcp2515_spi_select(void);
+#define mcp2515_spi_select(void)	\
+{									\
+	mcpPORT &= ~mcpSS;				\
+}
 
 /*! \fn void mcp2515_spi_unselect(void)
  *  \brief	Provide the remove of the MCP2515 on the SPI bus.
  *  \param
  *  \return
  */
-extern void mcp2515_spi_unselect(void);
+#define mcp2515_spi_unselect(void)	\
+{									\
+	mcpPORT |= mcpSS;				\
+}
 
 /*! \fn uint8_t mcp2515_spi_transfer(uint8_t dataOut, uint8_t *dataIn)
  *  \brief Provide the tranmission service on the SPI port to MCP2515.
  *  \param dataOut Data to be send.
  *  \param dataIn Pointer to 8 bits data space. Read value will be saved at specified address.
  */
-extern void mcp2515_spi_transfer(uint8_t dataOut, uint8_t *dataIn);
+void mcp2515_spi_transfer(uint8_t dataOut, uint8_t *dataIn)
+{
+	spi_transfer ( dataOut, dataIn );
+}
 
 /*! \fn uint8_t MCP2515canIDRead(uint32_t *canID)
  *  \brief Read the Std or Ext ID from the correct register.

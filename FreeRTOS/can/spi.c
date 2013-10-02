@@ -19,7 +19,7 @@
 #define spiINT_ENABLE					( ( unsigned char ) ( 1 << SPIE ) )
 #define spiMASTER_MODE					( ( unsigned char ) ( 1 << MSTR ) )
 
-#define spiSS							( ( unsigned char ) ( 1 << PB0 ) )
+/* SPI pins */
 #define spiSLCK							( ( unsigned char ) ( 1 << PB1 ) )
 #define spiMOSI							( ( unsigned char ) ( 1 << PB2 ) )
 #define spiMISO							( ( unsigned char ) ( 1 << PB3 ) )
@@ -27,12 +27,12 @@
 											
 /*-----------------------------------------------------------*/
 
-void mcp2515_spi_port_init (void)
+void spi_init (void)
 {
 	portENTER_CRITICAL();
 	{
 		/* SS, SLCK & MOSI as output */
-		DDRB |= ( spiSS | spiSLCK | spiMOSI );
+		DDRB |= ( spiSLCK | spiMOSI );
 	
 		/* MISO and PCINT4 input */
 		DDRB &= ~( spiMISO );
@@ -42,17 +42,7 @@ void mcp2515_spi_port_init (void)
 	portEXIT_CRITICAL();
 }
 
-void mcp2515_spi_select (void)
-{
-	PORTB &= ~spiSS;
-}
-
-void mcp2515_spi_unselect (void)
-{
-	PORTB |= spiSS;
-}
-
-void mcp2515_spi_transfer (uint8_t dataOut, uint8_t *dataIn)
+void spi_transfer (uint8_t dataOut, uint8_t *dataIn)
 {
 	SPDR = dataOut;
 	while(!(SPSR & (1<<SPIF)));

@@ -130,12 +130,6 @@
     <Compile Include="can\can.h">
       <SubType>compile</SubType>
     </Compile>
-    <Compile Include="can\can_ll.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="can\can_ll.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="can\MCP2515.c">
       <SubType>compile</SubType>
     </Compile>

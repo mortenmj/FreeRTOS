@@ -11,6 +11,7 @@
 #ifndef CAN_LL_H_
 #define CAN_LL_H_
 
+#include "can.h"
 #include "MCP2515.h"
 #include "MCP2515define.h"
 
@@ -39,7 +40,9 @@ void vCanLLCtrlOneShot ( unsigned char ucEnable);
 
 void vCanLLInit ( void );
 void vCanLLRead ( unsigned char ucAddr, unsigned char *pucInChar );
+void vCanLLReceivePacket ( xCanFrame *pxInFrame );
 void vCanLLReset ( void );
+void vCanLLSendPacket ( xCanFrame *pxOutFrame );
 void vCanLLWrite ( unsigned char ucAddr, unsigned char ucOutChar );
 void vCanLLTest ( mcp2515_can_frame_t *InFrame );
 

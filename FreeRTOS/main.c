@@ -19,9 +19,9 @@
 #include "u8g.h"
 //#include "m2.h"
 //#include "m2ghu8g.h"
-#include "can/can_ll.h"
 #include "can/MCP2515.h"
-#include "can/MCP2515define.h"
+#include "can/can.h"
+#include "can/can_ll.h"
 
 #include <util/delay.h>
 
@@ -58,9 +58,9 @@
 #define mainCAN_INIT_DELAY				500
 
 /* Task frequencies */
-#define mainCONTROL_TASK_FREQUENCY		( ( const portTickType ) 500 )
+#define mainCONTROL_TASK_FREQUENCY		( ( const portTickType ) 200 )
 #define mainJOYSTICK_TASK_FREQUENCY		( ( const portTickType ) 1000 )
-#define mainDISPLAY_TASK_FREQUENCY		( ( const portTickType ) 500 )
+#define mainDISPLAY_TASK_FREQUENCY		( ( const portTickType ) 200 )
 
 /* LED used by the serial port tasks.  This is toggled on each character Tx,
 and mainCOM_TEST_LED + 1 is toggles on each character Rx. */
@@ -110,18 +110,13 @@ uint8_t canintf;
 uint8_t cnf1;
 uint8_t cnf2;
 uint8_t cnf3;
-uint8_t txint;
-mcp2515_can_frame_t Frame;
+xCanFrame xOutFrame = {1, {'w','t','f'}, 3};
+xCanFrame xInFrame;
 
 /*-----------------------------------------------------------*/
 
 int main( void )
 {	
-	/*
-	DDRB = 0xFF;
-	PORTB = 0xFF;
-	*/
-	
 	/* Connect PD4 & PD6 to LED0 & LED1 */
 	DDRD |= (1 << PD4) | (1 << PD6);
 	
@@ -152,7 +147,6 @@ int main( void )
 static void vControl ( void *pvParameters )
 {
 	portTickType xLastWakeTime;
-	unsigned char foo;
 	
 	xLastWakeTime = xTaskGetTickCount ();
 	
@@ -163,14 +157,15 @@ static void vControl ( void *pvParameters )
 	{
 		vTaskDelayUntil ( &xLastWakeTime, mainCONTROL_TASK_FREQUENCY );
 		
-		vCanLLTest (&Frame);
+		vCanSendPacket ( &xOutFrame );
+		vCanReceivePacket ( &xInFrame );
 
-		vCanLLRead (MCP2515_CANSTAT, &canstat);
-		vCanLLRead (MCP2515_CANINTF, &canintf);
+		vCanRead (MCP2515_CANSTAT, &canstat);
+		vCanRead (MCP2515_CANINTF, &canintf);
 
-		vCanLLRead (MCP2515_CNF1, &cnf1);
-		vCanLLRead (MCP2515_CNF2, &cnf2);
-		vCanLLRead (MCP2515_CNF3, &cnf3);
+		vCanRead (MCP2515_CNF1, &cnf1);
+		vCanRead (MCP2515_CNF2, &cnf2);
+		vCanRead (MCP2515_CNF3, &cnf3);
 	}
 }
 
@@ -203,8 +198,6 @@ static void vDisplay ( void *pvParameters )
 	char cCnf1[4];
 	char cCnf2[4];
 	char cCnf3[4];
-	char cTxint[4];
-	char cFrame[4];
 	
 	xLastWakeTime = xTaskGetTickCount ();
 	
@@ -229,8 +222,6 @@ static void vDisplay ( void *pvParameters )
 		utoa (cnf2, cCnf2, 10);
 		utoa (cnf3, cCnf3, 10);
 		
-		utoa (Frame.data[0], cFrame, 10);
-		
 		u8g_FirstPage(&u8g);
 		do
 		{
@@ -251,9 +242,7 @@ static void vDisplay ( void *pvParameters )
 			
 			u8g_DrawLine ( &u8g, 64, 0, 64, 64 );
 			
-			u8g_DrawStr ( &u8g, 70, 10, "Frame: " );
-			u8g_DrawStr ( &u8g, 105, 10, cFrame );
-
+			u8g_DrawStr ( &u8g, 70, 10, (const char *) xInFrame.data );
 		} while ( u8g_NextPage( &u8g ) );
 	}
 }
@@ -274,8 +263,3 @@ void vApplicationTickHook ( void )
 {
 
 }
-
-ISR (INT0_vect)
-{
-	txint = 1;
-}	
