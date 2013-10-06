@@ -85,11 +85,14 @@
     <ListValues>
       <Value>../Source/include</Value>
       <Value>../Source/portable/GCC/AT90USB1287</Value>
-      <Value>../Control/adc</Value>
       <Value>../Control/can</Value>
       <Value>../Display/m2tklib</Value>
       <Value>../Display/u8glib</Value>
       <Value>..</Value>
+      <Value>../Drivers/adc</Value>
+      <Value>../Drivers/serial</Value>
+      <Value>../Drivers/spi</Value>
+      <Value>../Drivers/nrf24l01</Value>
     </ListValues>
   </avrgcc.compiler.directories.IncludePaths>
   <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
@@ -107,13 +110,16 @@
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
-    <Folder Include="Control\adc\" />
     <Folder Include="Control\can\" />
     <Folder Include="Display\m2tklib\" />
     <Folder Include="Control" />
     <Folder Include="Display" />
     <Folder Include="Display\u8glib\" />
-    <Folder Include="serial\" />
+    <Folder Include="Drivers" />
+    <Folder Include="Drivers\adc\" />
+    <Folder Include="Drivers\nrf24l01" />
+    <Folder Include="Drivers\serial\" />
+    <Folder Include="Drivers\spi\" />
     <Folder Include="Source\" />
     <Folder Include="Source\include\" />
     <Folder Include="Source\portable\" />
@@ -122,12 +128,6 @@
     <Folder Include="Source\portable\MemMang\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Control\adc\adc.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Control\adc\adc.h">
-      <SubType>compile</SubType>
-    </Compile>
     <Compile Include="Control\can\can.c">
       <SubType>compile</SubType>
     </Compile>
@@ -141,12 +141,6 @@
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Control\can\MCP2515define.h">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Control\can\spi.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="Control\can\spi.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Control\control.c">
@@ -497,16 +491,40 @@
     <Compile Include="Display\u8glib\u8g_virtual_screen.c">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="Drivers\adc\adc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\adc\adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\nrf24l01\nRF24L01.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\nrf24l01\packet.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\nrf24l01\radio.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\nrf24l01\radio.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\serial\serial.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\serial\serial.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\spi\spi.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="Drivers\spi\spi.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="FreeRTOSConfig.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="main.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="serial\serial.c">
-      <SubType>compile</SubType>
-    </Compile>
-    <Compile Include="serial\serial.h">
       <SubType>compile</SubType>
     </Compile>
     <Compile Include="Source\croutine.c">

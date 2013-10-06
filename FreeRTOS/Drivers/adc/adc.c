@@ -12,7 +12,7 @@
 #include "semphr.h"
 #include "task.h"
 
-#include "serial/serial.h"
+#include "serial.h"
 #include "adc.h"
 
 /* Constants for writing to ADMUX */

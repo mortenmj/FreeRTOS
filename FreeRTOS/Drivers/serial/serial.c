@@ -165,11 +165,23 @@ void vSerialPutString( xComPortHandle pxPort, const signed char * const pcString
 {
 	/* Only one port is supported. */
 	( void ) pxPort;
-	unsigned short i;
+	unsigned short i = 0;
 	
 	while ( i < usStringLength && pcString[i] != 0x00)
 	{
 		xSerialPutChar ( NULL, pcString[i++], 0 );
+	}
+}
+
+void vSerialPutStringFromISR( xComPortHandle pxPort, const signed char * const pcString, unsigned short usStringLength )
+{
+	/* Only one port is supported. */
+	( void ) pxPort;
+	unsigned short i = 0;
+	
+	while ( i < usStringLength && pcString[i] != 0x00)
+	{
+		xSerialPutCharFromISR ( NULL, pcString[i++] );
 	}
 }
 
@@ -197,6 +209,22 @@ signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, signed char cOutChar
 
 	/* Return false if after the block time there is no room on the Tx queue. */
 	if( xQueueSend( xCharsForTx, &cOutChar, xBlockTime ) != pdPASS )
+	{
+		return pdFAIL;
+	}
+
+	vInterruptOn();
+
+	return pdPASS;
+}
+
+signed portBASE_TYPE xSerialPutCharFromISR( xComPortHandle pxPort, signed char cOutChar )
+{
+	/* Only one port is supported. */
+	( void ) pxPort;
+
+	/* Return false if after the block time there is no room on the Tx queue. */
+	if( xQueueSendFromISR ( xCharsForTx, &cOutChar, 0 ) != pdPASS )
 	{
 		return pdFAIL;
 	}

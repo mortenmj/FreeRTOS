@@ -126,8 +126,10 @@ typedef enum
 xComPortHandle xSerialPortInitMinimal( unsigned long ulWantedBaud, unsigned portBASE_TYPE uxQueueLength );
 xComPortHandle xSerialPortInit( eCOMPort ePort, eBaud eWantedBaud, eParity eWantedParity, eDataBits eWantedDataBits, eStopBits eWantedStopBits, unsigned portBASE_TYPE uxBufferLength );
 void vSerialPutString( xComPortHandle pxPort, const signed char * const pcString, unsigned short usStringLength );
+void vSerialPutStringFromISR( xComPortHandle pxPort, const signed char * const pcString, unsigned short usStringLength );
 signed portBASE_TYPE xSerialGetChar( xComPortHandle pxPort, signed char *pcRxedChar, portTickType xBlockTime );
 signed portBASE_TYPE xSerialPutChar( xComPortHandle pxPort, signed char cOutChar, portTickType xBlockTime );
+signed portBASE_TYPE xSerialPutCharFromISR( xComPortHandle pxPort, signed char cOutChar );
 portBASE_TYPE xSerialWaitForSemaphore( xComPortHandle xPort );
 void vSerialClose( xComPortHandle xPort );
 

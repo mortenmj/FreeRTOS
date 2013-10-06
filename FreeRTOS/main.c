@@ -68,20 +68,22 @@ void vApplicationTickHook ( void );
 int main( void )
 {	
 	/* Connect PD4 & PD6 to LED0 & LED1 */
-	DDRD |= (1 << PD4) | (1 << PD6);
+	DDRD |= (1 << PD4) | (1 << PD5) | (1 << PD6);
 	
 	PORTD |= (1 << PD4);
+	PORTD |= (1 << PD5);
 	PORTD |= (1 << PD6);
 	
-	PCMSK0 |= (1 << PCINT4);
-	PCICR |= (1 << PCIE0);
-		
+	/* SPI init */
+	spi_init ();
+	
+	/* UART init */
 	xSerialPortInitMinimal ( mainCOM_BAUD_RATE, 100 );
 	vSerialPutString ( NULL, (signed char *) "init\n", 5 );
 	
 	/* Create tasks */
-	xTaskCreate ( vDisplay, (signed char * ) "Display", ( configDISPLAY_STACK_SIZE ), NULL, mainDISPLAY_TASK_PRIORITY, NULL );
-	xTaskCreate ( vControl, (signed char * ) "Control", configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL );
+	xTaskCreate ( vDisplay, (signed char * ) "Display", configDISPLAY_STACK_SIZE, NULL, mainDISPLAY_TASK_PRIORITY, NULL );
+	xTaskCreate ( vControl, (signed char * ) "Control", configCONTROL_STACK_SIZE, NULL, tskIDLE_PRIORITY + 1, NULL );
 
 	/* Start scheduler */
 	vTaskStartScheduler();

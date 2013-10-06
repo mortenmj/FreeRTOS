@@ -11,6 +11,7 @@
 #include "queue.h"
 #include "task.h"
 #include "spi.h"
+#include "serial.h"
 
 #include <util/delay.h>
 
@@ -42,9 +43,25 @@ void spi_init (void)
 	portEXIT_CRITICAL();
 }
 
-void spi_transfer (uint8_t dataOut, uint8_t *dataIn)
+uint8_t spi_transfer (uint8_t data_out)
 {
-	SPDR = dataOut;
+	SPDR = data_out;
 	while(!(SPSR & (1<<SPIF)));
-	*dataIn = SPDR;
+	return SPDR;
+}
+
+void spi_write_block (uint8_t *data_out, uint8_t len)
+{
+	for (int i = 0; i < len; i++)
+	{
+		spi_transfer ( data_out[i] );
+	}
+}
+
+void spi_readwrite_block (uint8_t *data_out, uint8_t *data_in, uint8_t len)
+{
+	for (int i = 0; i < len; i++)
+	{
+		data_in[i] = spi_transfer ( data_out[i] );
+	}
 }

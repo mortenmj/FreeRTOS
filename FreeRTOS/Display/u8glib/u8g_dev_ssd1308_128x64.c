@@ -35,7 +35,7 @@
 */
 
 #include "FreeRTOS.h"
-#include "serial/serial.h"
+#include "serial.h"
 #include "u8g.h"
 
 #define WIDTH 128

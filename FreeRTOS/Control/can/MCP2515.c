@@ -60,8 +60,6 @@
  */
 void mcp2515_spi_port_init(void)
 {
-	spi_init ();
-	
 	/* Set the CS pin as output */
 	mcpDDR |= mcpSS;
 }
@@ -91,7 +89,7 @@ void mcp2515_spi_port_init(void)
  */
 void mcp2515_spi_transfer(uint8_t dataOut, uint8_t *dataIn)
 {
-	spi_transfer ( dataOut, dataIn );
+	*dataIn = spi_transfer ( dataOut );
 }
 
 /*! \fn uint8_t MCP2515canIDRead(uint32_t *canID)

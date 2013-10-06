@@ -20,8 +20,13 @@ void vCanInit ( void )
 	mcp2515_spi_port_init ();
 		
 	mcp2515_set_baudrate(250000, 1);
+	
+	/* Enable pin change interrupt on PB4 */
+	DDRB |= PCINT4;
+	PCMSK0 |= (1 << PCINT4);
+	PCICR |= (1 << PCIE0);
 
-	/* Enable all interrupts */
+	/* Enable interrupts on MCP2515 */
 	mcp2515_write ( MCP2515_CANINTE, 0xFF );
 
 	/* Set loopback mode */
@@ -48,10 +53,4 @@ void vCanSendPacket ( xCanFrame *pxOutFrame )
 void vCanWrite ( unsigned char ucAddr, unsigned char ucOutChar )
 {
 	mcp2515_write ( (uint8_t) ucAddr, (uint8_t) ucOutChar );
-}
-
-/* Handle interrupts from MCP2515 */
-ISR ( PCINT0_vect )
-{
-	mcp2515_read ( MCP2515_CANINTF, &xCan.interrupt );
 }
